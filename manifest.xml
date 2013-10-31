@@ -1,0 +1,18 @@
+<package>
+  <description brief="nao_basic">
+
+     nao_basic
+
+  </description>
+  <author>marzinotto, tjernberg</author>
+  <license>GPLv2</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nao_basic</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="behavior_trees"/>
+
+</package>
+
+
