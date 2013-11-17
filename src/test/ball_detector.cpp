@@ -145,7 +145,7 @@ int main() {
 
   //std::string robotIP = "localhost";
 
-  std::string robotIP = "192.168.0.199";
+  std::string robotIP = "192.168.0.195";
 
   AL::ALMotionProxy motionProxy(robotIP, 9559);
   AL::ALVideoDeviceProxy camProxy(robotIP, 9559);
@@ -172,10 +172,10 @@ int main() {
 	cv::Mat image_clone2 = image.clone();
 
 	int red_hue_l = 0;
-	int red_hue_h = 43;
-	int red_sat_l = 113;
+	int red_hue_h = 16;
+	int red_sat_l = 121;
 	int red_sat_h = 255;
-	int red_val_l = 23;
+	int red_val_l = 21;
 	int red_val_h = 255;
 
 	int green_hue_l = 40;

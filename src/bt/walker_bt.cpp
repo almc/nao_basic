@@ -80,8 +80,8 @@ public:
 			if ( (ros::Time::now() - time_at_pos_).toSec() < 0.2)
 			{
 				//Goal position of ball relative to ROBOT_FRAME
-				float goal_x = 0.19;
-				float goal_y = -0.14;
+				float goal_x = 0.16;
+				float goal_y = 0.12;
 
 				float error_x = last_ball_pos_.x - goal_x;
 				float error_y = last_ball_pos_.y - goal_y;
@@ -91,7 +91,7 @@ public:
 					std::cout << "Closeness count " << closeness_count << std::endl;
 					closeness_count++;
 					//If the NAO has been close for enough iterations, we consider to goal reached
-					if (closeness_count > 20)
+					if (closeness_count > 5)
 					{
 						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
@@ -108,9 +108,9 @@ public:
 				error_x = error_x < -0.6 ? -0.6 : error_x;
 				error_y = error_y >  0.6 ?  0.6 : error_y;
 				error_y = error_y < -0.6 ? -0.6 : error_y;
-				float speed_x = error_x * 1.0/(1+closeness_count);
-				float speed_y = error_y * 1.0/(1+closeness_count);
-				float frequency = 0.3/(1+closeness_count+(1.0/(error_x+error_y))); //Frequency of foot steps
+				float speed_x = error_x * 1.0/(2+5*closeness_count);
+				float speed_y = error_y * 1.0/(2+5*closeness_count);
+				float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
 				// motion_proxy_ptr->setWalkTargetVelocity(speed_x, speed_y, 0.0, frequency);
 				// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
 				AL::ALValue walk_config;

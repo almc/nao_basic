@@ -60,20 +60,20 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(TestBT src/bt/template_bt.cpp)
-rosbuild_link_boost(TestBT thread)
+# rosbuild_add_executable(TestBT src/bt/template_bt.cpp)
+# rosbuild_link_boost(TestBT thread)
 
 rosbuild_add_executable(BallTrackerBT src/bt/ball_tracker_bt.cpp ${COMMON_SRC})
-rosbuild_link_boost(BallTrackerBT thread program_options)
 target_link_libraries(BallTrackerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
+rosbuild_link_boost(BallTrackerBT thread program_options)
 
 rosbuild_add_executable(BallGrasperBT src/bt/ball_grasper_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
 target_link_libraries(BallGrasperBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(BallGrasperBT thread program_options)
 
-rosbuild_add_executable(HandMoverBT src/bt/hand_mover_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
-target_link_libraries(HandMoverBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(HandMoverBT thread program_options)
+rosbuild_add_executable(HandMover2BT src/bt/hand_mover2_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
+target_link_libraries(HandMover2BT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(HandMover2BT thread program_options)
 
 rosbuild_add_executable(WalkerBT src/bt/walker_bt.cpp src/common/robot_config.cpp)
 target_link_libraries(WalkerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
