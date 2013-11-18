@@ -23,6 +23,9 @@ void Bend2(AL::ALMotionProxy* motion_proxy_ptr);
 
 void UnBend2(AL::ALMotionProxy* motion_proxy_ptr);
 
+void Kick(AL::ALMotionProxy* motion_proxy_ptr);
+
+bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr);
 
 
 #endif

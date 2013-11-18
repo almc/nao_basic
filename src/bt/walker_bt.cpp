@@ -62,6 +62,8 @@ public:
 		{
 			has_succeeded = false;
 			closeness_count = 0;
+			init_ = false;
+			deactivate();
 		}
 
 	void executeCB(ros::Duration dt)
@@ -81,7 +83,7 @@ public:
 			{
 				//Goal position of ball relative to ROBOT_FRAME
 				float goal_x = 0.16;
-				float goal_y = 0.12;
+				float goal_y = 0.11;
 
 				float error_x = last_ball_pos_.x - goal_x;
 				float error_y = last_ball_pos_.y - goal_y;
@@ -96,6 +98,7 @@ public:
 						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
 						send_feedback(SUCCESS);
+						finalize();
 					}
 					return;
 				}

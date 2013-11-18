@@ -215,10 +215,10 @@ int main(int argc, char** argv)
 void setupBallColor(std::string ball_color) {
 
 	int red_hue_l = 0;
-	int red_hue_h = 21;
-	int red_sat_l = 121;
+	int red_hue_h = 16;
+	int red_sat_l = 152;
 	int red_sat_h = 255;
-	int red_val_l = 21;
+	int red_val_l = 40;
 	int red_val_h = 255;
 
 	int red_hue_l_2 = 0;

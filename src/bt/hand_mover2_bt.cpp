@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include <alproxies/almotionproxy.h>
+#include <alproxies/altexttospeechproxy.h>
 #include <alerror/alerror.h>
 
 
@@ -27,6 +28,7 @@ public:
 	geometry_msgs::Pose2D last_ball_pos_;
 	geometry_msgs::Pose2D static_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
+	AL::ALTextToSpeechProxy* speech_proxy_ptr;
 
 	HandMover(std::string name, std::string robot_ip):
 		ROSAction(name),
@@ -39,6 +41,7 @@ public:
 			// std::string robotIP = "192.168.0.198";
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
 			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
+			speech_proxy_ptr = new AL::ALTextToSpeechProxy(robot_ip, 9559);
 		}
 
 	~HandMover()
@@ -62,7 +65,9 @@ public:
 		{
 			has_bent_ = false;
 			has_moved_hand_ = false;
-			delete motion_proxy_ptr;
+			init_ = false;
+			//delete motion_proxy_ptr;
+			deactivate();
 		}
 
 	void executeCB(ros::Duration dt)
@@ -82,10 +87,24 @@ public:
 				Bend2(motion_proxy_ptr);
 				MoveHand2(motion_proxy_ptr);
 				CloseHand(motion_proxy_ptr);
-				UnBend2(motion_proxy_ptr);
+				if(CheckLHand(motion_proxy_ptr))
+				{
+					speech_proxy_ptr->say("I have it, I rock");
+					UnBend2(motion_proxy_ptr);	
+					send_feedback(SUCCESS);
+					finalize();
+					return;				
+				}
+				else 
+				{
+					speech_proxy_ptr->say("I miss it, I suck. I will try it again");	
+					UnBend2(motion_proxy_ptr);	
+					send_feedback(FAILURE);
+					finalize();
+					return;
+				}
+				
 			}
-
-			
 			
 		}
 

@@ -75,6 +75,10 @@ rosbuild_add_executable(HandMover2BT src/bt/hand_mover2_bt.cpp src/common/motion
 target_link_libraries(HandMover2BT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(HandMover2BT thread program_options)
 
+rosbuild_add_executable(BallKickerBT src/bt/ball_kicker_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
+target_link_libraries(BallKickerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(BallKickerBT thread program_options)
+
 rosbuild_add_executable(WalkerBT src/bt/walker_bt.cpp src/common/robot_config.cpp)
 target_link_libraries(WalkerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(WalkerBT thread program_options)
