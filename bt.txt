@@ -1,13 +1,6 @@
-/
-	A BallTrackerRed
-	
-	
-	[*
-
-		A Walker
-		A HandMover2
-		A BallKicker		
-	]
 
 
-|
+		A GoToWaypoint
+		
+
+

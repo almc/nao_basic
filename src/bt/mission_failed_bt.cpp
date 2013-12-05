@@ -13,11 +13,12 @@
 
 #include <alproxies/almotionproxy.h>
 #include <alproxies/altexttospeechproxy.h>
+#include <alproxies/alrobotpostureproxy.h>
 #include <alerror/alerror.h>
 
 
 
-class BallKicker : ROSAction
+class MissionFailed : ROSAction
 {
 public:
 	bool init_;
@@ -28,9 +29,10 @@ public:
 	//geometry_msgs::Pose2D last_ball_pos_;
 	//geometry_msgs::Pose2D static_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
-	//AL::ALTextToSpeechProxy* speech_proxy_ptr;
+	AL::ALRobotPostureProxy* posture_proxy_ptr;
+	AL::ALTextToSpeechProxy* speech_proxy_ptr;
 
-	BallKicker(std::string name, std::string robot_ip):
+	MissionFailed(std::string name, std::string robot_ip):
 		ROSAction(name),
 		init_(false),
 		//has_bent_(false),
@@ -41,10 +43,11 @@ public:
 			// std::string robotIP = "192.168.0.198";
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
 			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
-			//speech_proxy_ptr = new AL::ALTextToSpeechProxy(robot_ip, 9559);
+			posture_proxy_ptr = new AL::ALRobotPostureProxy(robot_ip, 9559);
+			speech_proxy_ptr = new AL::ALTextToSpeechProxy(robot_ip, 9559);
 		}
 
-	~BallKicker()
+	~MissionFailed()
 		{}
 
 	void initialize()
@@ -72,9 +75,9 @@ public:
 
 	void executeCB(ros::Duration dt)
 		{
-			std::cout << "**BallKicker -%- Executing Main Task, elapsed_time: "
+			std::cout << "**BallThrower -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
-			std::cout << "**BallKicker -%- execute_time: "
+			std::cout << "**BallThrower -%- execute_time: "
 			          << execute_time_.toSec() << std::endl;
 			execute_time_ += dt;
 
@@ -83,7 +86,8 @@ public:
 				initialize();
 				init_ = true;
 				//has_bent_ = false;
-				Kick(motion_proxy_ptr);
+				speech_proxy_ptr->say("There is something wrong with me today. I better try later");
+				posture_proxy_ptr->goToPosture("Crouch", 0.8);
 				send_feedback(SUCCESS);
 				finalize();
 				return;
@@ -102,11 +106,11 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "BallKicker"); // name used for bt.txt
+	ros::init(argc, argv, "MissionFailed"); // name used for bt.txt
 	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	setupCmdLineReader();
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
-	BallKicker server(ros::this_node::getName(), robot_ip);
+	MissionFailed server(ros::this_node::getName(), robot_ip);
 	//ros::NodeHandle n;
 	//ros::Subscriber ball_pos_sub = n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1,
 	                                                                  //&HandMover::BallPosReceived,

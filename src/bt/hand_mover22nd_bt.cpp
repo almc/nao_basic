@@ -89,7 +89,7 @@ public:
 				CloseHand(motion_proxy_ptr);
 				if(CheckLHand(motion_proxy_ptr))
 				{
-					speech_proxy_ptr->say("I have it, I rock");
+					speech_proxy_ptr->say("Now I have it, Super");
 					UnBend2(motion_proxy_ptr);	
 					send_feedback(SUCCESS);
 					finalize();
@@ -97,9 +97,9 @@ public:
 				}
 				else 
 				{
-					speech_proxy_ptr->say("I miss it, bad luck. I will try it again");	
+					speech_proxy_ptr->say("I miss it once again");	
 					UnBend2(motion_proxy_ptr);
-					MoveBack(motion_proxy_ptr);
+					//MoveBack(motion_proxy_ptr);	
 					send_feedback(FAILURE);
 					finalize();
 					return;
@@ -125,7 +125,7 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "HandMover2"); // name used for bt.txt
+	ros::init(argc, argv, "HandMover22nd"); // name used for bt.txt
 	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	setupCmdLineReader();
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);

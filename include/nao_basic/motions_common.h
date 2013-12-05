@@ -3,6 +3,8 @@
 
 #include <alvalue/alvalue.h>
 #include <alproxies/almotionproxy.h>
+#include <alproxies/altexttospeechproxy.h>
+#include <alproxies/alrobotpostureproxy.h>
 
 void CloseHand(AL::ALMotionProxy* motion_proxy_ptr);
 void OpenHand(AL::ALMotionProxy* motion_proxy_ptr);
@@ -23,9 +25,13 @@ void Bend2(AL::ALMotionProxy* motion_proxy_ptr);
 
 void UnBend2(AL::ALMotionProxy* motion_proxy_ptr);
 
-void Kick(AL::ALMotionProxy* motion_proxy_ptr);
+void Throw(AL::ALMotionProxy* motion_proxy_ptr);
 
 bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr);
+
+
+void MoveBack(AL::ALMotionProxy* motion_proxy_ptr);
+
 
 
 #endif

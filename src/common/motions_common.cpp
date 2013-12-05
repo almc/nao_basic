@@ -28,6 +28,38 @@ void OpenHand(AL::ALMotionProxy* motion_proxy_ptr)
 }
 
 
+
+
+void MoveBack(AL::ALMotionProxy* motion_proxy_ptr)
+{
+
+  // Example showing the moveTo command
+  // as length of path is less than 0.4m
+  // the path will be an SE3 interpolation
+  // The units for this command are meters and radians
+ 		 float x  = 0.0f;
+ 		 float y  = 0.0f;
+  // pi/2 anti-clockwise (90 degrees)
+ 		 float theta = 0.0f;
+  // Will block until walk Task is finished
+
+  // Example showing the moveTo command
+  // as length of path is more than 0.4m
+  // the path will be follow a dubins curve
+  // The units for this command are meters and radians
+ 		x  = -0.2f;
+  		y  = 0.0f;
+ 		theta  = 0.0f;
+  		motion_proxy_ptr->moveTo(x, y, theta);
+
+		AL::ALValue names         = ALVA("HeadYaw", "HeadPitch");
+		AL::ALValue target_angles = ALVA(0.5, 0.0);
+		float fraction_max_speed  = 0.1f;
+		motion_proxy_ptr->setAngles(names, target_angles, fraction_max_speed);
+}
+
+
+
 float MoveHand(AL::ALMotionProxy* motion_proxy_ptr,
                float x_hand, float y_hand, float z_hand)
 {
@@ -1527,7 +1559,7 @@ catch(const std::exception&)
 }
 
 
-void Kick(AL::ALMotionProxy* motion_proxy_ptr)
+void Throw(AL::ALMotionProxy* motion_proxy_ptr)
 {
 // Choregraphe simplified export in c++.
 // Add #include <alproxies/almotionproxy.h> at the beginning of this file.

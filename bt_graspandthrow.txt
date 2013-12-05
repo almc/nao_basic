@@ -1,0 +1,22 @@
+/
+	A BallTrackerRed
+	
+	{*
+		[*
+	
+			{*
+				[*
+					A Walker
+					A HandMover2
+				]
+				[*
+					A Walker2nd
+					A HandMover22nd
+				]		
+			}
+			A BallThrower		
+		]
+		A MissionFailed	
+	}
+
+|
