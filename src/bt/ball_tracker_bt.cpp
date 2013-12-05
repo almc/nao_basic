@@ -89,7 +89,7 @@ public:
 			// refreshImage(camProxy, clientName, imgHeader);
 			setwindowSettings();
 			ball_tracker_initialize();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -100,7 +100,7 @@ public:
 			camProxy.unsubscribe(clientName);
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**Ball tracker -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -131,7 +131,7 @@ public:
 			// nr_pixels_ball_ptr = &init_ptr_value;
 			std::pair<int,int> ballPosCam(-1, -1);
 			if (hue_l_2 != -1 && hue_h_2 != -1 && sat_l_2 != -1 &&
-				sat_h_2 != -1 && val_l_2 != -1 && val_h_2 != -1)
+			    sat_h_2 != -1 && val_l_2 != -1 && val_h_2 != -1)
 			{
 
 				// Two threshold ranges are used for example for red
@@ -173,6 +173,7 @@ public:
 			cv::imshow("Display Window"     , image);
 			cv::imshow("Blob Window"        , image_clone1);
 			cv::waitKey(30);
+			return 0;
 		}
 
 	void resetCB()

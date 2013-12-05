@@ -58,7 +58,7 @@ public:
 			                                         stiffness,
 			                                         stiffness_time);
 			motion_proxy_ptr->moveInit();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -70,7 +70,7 @@ public:
 			deactivate();
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**HandMover -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -90,23 +90,23 @@ public:
 				if(CheckLHand(motion_proxy_ptr))
 				{
 					speech_proxy_ptr->say("I have it, I rock");
-					UnBend2(motion_proxy_ptr);	
-					send_feedback(SUCCESS);
+					UnBend2(motion_proxy_ptr);
+					set_feedback(SUCCESS);
 					finalize();
-					return;				
+					return 1;
 				}
-				else 
+				else
 				{
-					speech_proxy_ptr->say("I miss it, bad luck. I will try it again");	
+					speech_proxy_ptr->say("I miss it, bad luck. I will try it again");
 					UnBend2(motion_proxy_ptr);
 					MoveBack(motion_proxy_ptr);
-					send_feedback(FAILURE);
+					set_feedback(FAILURE);
 					finalize();
-					return;
+					return 1;
 				}
-				
+
 			}
-			
+			return 0;
 		}
 
 	void resetCB()

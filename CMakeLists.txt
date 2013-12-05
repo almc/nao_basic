@@ -105,6 +105,3 @@ rosbuild_link_boost(GoToWaypointBT thread program_options)
 rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
 target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
 # target_link_libraries(BallDetector alproxies alcommon alvision alvalue ${OpenCV_LIBS})
-
-
-

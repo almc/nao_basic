@@ -55,7 +55,7 @@ public:
 			                                         stiffness,
 			                                         stiffness_time);
 			motion_proxy_ptr->moveInit();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -66,7 +66,7 @@ public:
 			deactivate();
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**Walk -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -97,10 +97,11 @@ public:
 					{
 						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
-						send_feedback(SUCCESS);
+						set_feedback(SUCCESS);
 						finalize();
+						return 1;
 					}
-					return;
+					return 0;
 				}
 				else
 				{
@@ -124,15 +125,16 @@ public:
 			}
 			else if (has_succeeded)
 			{
-				send_feedback(SUCCESS);
-				return;
+				set_feedback(SUCCESS);
+				return 1;
 			}
 			else if ( (ros::Time::now() - time_at_pos_).toSec() > 0.2)
 			{
-				send_feedback(RUNNING);
-				return;
+				set_feedback(RUNNING);
+				return 0;
 			}
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
+			return 0;
 		}
 
 	void resetCB()

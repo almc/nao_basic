@@ -21,7 +21,7 @@ public:
 	void initialize()
 		{
 			// enableStiffness();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -29,7 +29,7 @@ public:
 			// disableStiffness();
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**Walk -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -42,11 +42,11 @@ public:
 
 			if (execute_time_.toSec() >= 2)
 			{
-				send_feedback(SUCCESS);
-				send_result(SUCCESS);
+				set_feedback(SUCCESS);
 				finalize();
-				stop();
+				return 1;		// stop();
 			}
+			return 0;
 		}
 
 	void resetCB()

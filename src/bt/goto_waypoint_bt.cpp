@@ -1,11 +1,11 @@
-#include <nao_basic/robot_config.h>
-
 #include "ros/ros.h"
 #include <actionlib/client/simple_action_client.h>
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/Pose2D.h>
-#include </home/maslab/ros_workspace/reconfig/ltl/msg_gen/cpp/include/ltl/action.h>
+
+#include <ltl/action.h>
 #include <behavior_trees/rosaction.h>
+#include <nao_basic/robot_config.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -23,13 +23,12 @@ public:
 	geometry_msgs::Pose2D last_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
 
-	int closeness_count;
 	bool has_succeeded;
+	int closeness_count;
 
 	GoToWaypoint(std::string name, std::string robot_ip):
 		ROSAction(name),
-	
-	init_(false),
+		init_(false),
 		execute_time_((ros::Duration) 0),
 		time_at_pos_((ros::Time) 0),
 		has_succeeded(false),
@@ -57,7 +56,7 @@ public:
 			                                         stiffness,
 			                                         stiffness_time);
 			motion_proxy_ptr->moveInit();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -68,7 +67,7 @@ public:
 			deactivate();
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**GoToWaypoint -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -99,10 +98,10 @@ public:
 					{
 						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
-						send_feedback(SUCCESS);
+						set_feedback(SUCCESS);
 						finalize();
 					}
-					return;
+					return 1;
 				}
 				else
 				{
@@ -113,9 +112,9 @@ public:
 				error_x = error_x < -0.6 ? -0.6 : error_x;
 				error_y = error_y >  0.6 ?  0.6 : error_y;
 				error_y = error_y < -0.6 ? -0.6 : error_y;
-				float speed_x = error_x * 1.0/(2+5*closeness_count);
-				float speed_y = error_y * 1.0/(2+5*closeness_count);
-				float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
+				// float speed_x = error_x * 1.0/(2+5*closeness_count);
+				// float speed_y = error_y * 1.0/(2+5*closeness_count);
+				// float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
 				// motion_proxy_ptr->setWalkTargetVelocity(speed_x, speed_y, 0.0, frequency);
 				// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
 				AL::ALValue walk_config;
@@ -124,27 +123,28 @@ public:
 				std::cout << "y " << last_ball_pos_.y << std::endl;
 				if (fabs (last_ball_pos_.y) < 0.08)
 				{
-					
+
 					motion_proxy_ptr->post.moveTo(0.0, last_ball_pos_.x, 0.0, walk_config);
 				}
 				else
 				{
-					
+
 					motion_proxy_ptr->post.moveTo(0.0, 0.0, atan2(last_ball_pos_.y,last_ball_pos_.x), walk_config);
 
 				}
 			}
 			else if (has_succeeded)
 			{
-				send_feedback(SUCCESS);
-				return;
+				set_feedback(SUCCESS);
+				return 1;
 			}
 			else if ( (ros::Time::now() - time_at_pos_).toSec() > 0.2)
 			{
-				send_feedback(RUNNING);
-				return;
+				set_feedback(RUNNING);
+				return 0;
 			}
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
+			return 0;
 		}
 
 	void resetCB()
@@ -171,8 +171,8 @@ int main(int argc, char** argv)
 	GoToWaypoint server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
 	ros::Subscriber ball_pos_sub = n.subscribe<ltl::action>("next_move", 1,
-	                                                                  &GoToWaypoint::NewWaypointReceived,
-	                                                                  &server);
+	                                                        &GoToWaypoint::NewWaypointReceived,
+	                                                        &server);
 	ros::spin();
 	return 0;
 }

@@ -51,7 +51,7 @@ public:
 	void initialize()
 		{
 			sleep(1.0);
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -60,7 +60,7 @@ public:
 			in_check_hand_pose_ = false;
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**Grasper -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -94,8 +94,8 @@ public:
 					//If ball is seen as big enough, it is in hand.
 					if (last_ball_size_ > 80)
 					{
-						send_feedback(SUCCESS);
-						return;
+						set_feedback(SUCCESS);
+						return 1;
 					}
 					else
 					{
@@ -107,11 +107,12 @@ public:
 				OpenHand(motion_proxy_ptr);
 				has_closed_hand_ = false;
 				in_check_hand_pose_ = false;
-				send_feedback(FAILURE);
-				return;
+				set_feedback(FAILURE);
+				return 1;
 			}
 
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
+			return 0;
 		}
 
 	void resetCB()

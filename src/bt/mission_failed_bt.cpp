@@ -61,7 +61,7 @@ public:
 			                                         stiffness,
 			                                         stiffness_time);
 			motion_proxy_ptr->moveInit();
-			send_feedback(RUNNING);
+			set_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -73,7 +73,7 @@ public:
 			deactivate();
 		}
 
-	void executeCB(ros::Duration dt)
+	int executeCB(ros::Duration dt)
 		{
 			std::cout << "**BallThrower -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -88,13 +88,11 @@ public:
 				//has_bent_ = false;
 				speech_proxy_ptr->say("There is something wrong with me today. I better try later");
 				posture_proxy_ptr->goToPosture("Crouch", 0.8);
-				send_feedback(SUCCESS);
+				set_feedback(SUCCESS);
 				finalize();
-				return;
+				return 1;
 			}
-
-			
-			
+			return 0;
 		}
 
 	void resetCB()
@@ -112,9 +110,9 @@ int main(int argc, char** argv)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	MissionFailed server(ros::this_node::getName(), robot_ip);
 	//ros::NodeHandle n;
-	//ros::Subscriber ball_pos_sub = n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1,
-	                                                                  //&HandMover::BallPosReceived,
-	                                                                 // &server);
+	// ros::Subscriber ball_pos_sub = n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1,
+	//                                                                   &HandMover::BallPosReceived,
+	//                                                                   &server);
 	ros::spin();
 	return 0;
 }
