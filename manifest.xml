@@ -12,6 +12,5 @@
   <depend package="rospy"/>
   <depend package="roscpp"/>
   <depend package="behavior_trees"/>
-  <depend package="ltl"/>
 
 </package>

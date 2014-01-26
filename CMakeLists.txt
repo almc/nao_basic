@@ -48,7 +48,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #uncomment if you have defined messages
-# rosbuild_genmsg()
+rosbuild_genmsg()
 #uncomment if you have defined services
 # rosbuild_gensrv()
 
@@ -101,6 +101,22 @@ rosbuild_link_boost(Walker2ndBT thread program_options)
 rosbuild_add_executable(GoToWaypointBT src/bt/goto_waypoint_bt.cpp src/common/robot_config.cpp)
 target_link_libraries(GoToWaypointBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(GoToWaypointBT thread program_options)
+
+rosbuild_add_executable(MoveUpBT src/bt/move_up_bt.cpp src/common/robot_config.cpp)
+target_link_libraries(MoveUpBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(MoveUpBT thread program_options)
+
+rosbuild_add_executable(MoveDownBT src/bt/move_down_bt.cpp src/common/robot_config.cpp)
+target_link_libraries(MoveDownBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(MoveDownBT thread program_options)
+
+rosbuild_add_executable(MoveLeftBT src/bt/move_left_bt.cpp src/common/robot_config.cpp)
+target_link_libraries(MoveLeftBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(MoveLeftBT thread program_options)
+
+rosbuild_add_executable(MoveRightBT src/bt/move_right_bt.cpp src/common/robot_config.cpp)
+target_link_libraries(MoveRightBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(MoveRightBT thread program_options)
 
 rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
 target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})

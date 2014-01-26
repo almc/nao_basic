@@ -1,11 +1,12 @@
 #include "ros/ros.h"
+#include "std_msgs/String.h"
 #include <actionlib/client/simple_action_client.h>
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/Pose2D.h>
 
+#include <nao_basic/action.h>
 #include <behavior_trees/rosaction.h>
 #include <nao_basic/robot_config.h>
-#include <nao_basic/action.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -13,6 +14,8 @@
 
 #include <alproxies/almotionproxy.h>
 #include <alerror/alerror.h>
+
+ros::Publisher chatter_pub;
 
 class GoToWaypoint : ROSAction
 {
@@ -36,7 +39,6 @@ public:
 		// last_ball_pos_(geometry_msgs::Pose2D(0,0,0))
 		{
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
-
 			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
 		}
 
@@ -47,6 +49,14 @@ public:
 
 	void initialize()
 		{
+			// write "down" to ltl.planner
+			std_msgs::String msg;
+			std::stringstream ss;
+			ss << "down" << std::endl;
+			msg.data = ss.str();
+			// ROS_INFO("%s", msg.data.c_str());
+			chatter_pub.publish(msg);
+
 			sleep(1.0);
 			//Set the stiffness so the robot can move
 			AL::ALValue stiffness_name("Body");
@@ -164,7 +174,7 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "GoToWaypoint"); // name used for bt.txt
+	ros::init(argc, argv, "MoveDown"); // name used for bt.txt
 	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	setupCmdLineReader();
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
@@ -173,6 +183,8 @@ int main(int argc, char** argv)
 	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::action>("next_move", 1,
 	                                                        &GoToWaypoint::NewWaypointReceived,
 	                                                        &server);
+	ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+
 	ros::spin();
 	return 0;
 }
