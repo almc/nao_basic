@@ -45,7 +45,10 @@ public:
 		}
 
 	~HandMover()
-		{}
+		{
+			delete motion_proxy_ptr;
+			delete speech_proxy_ptr;
+		}
 
 	void initialize()
 		{
@@ -66,7 +69,6 @@ public:
 			has_bent_ = false;
 			has_moved_hand_ = false;
 			init_ = false;
-			//delete motion_proxy_ptr;
 			// deactivate();
 		}
 
@@ -93,10 +95,8 @@ public:
 					speech_proxy_ptr->say("I have it, I rock");
 					UnBend2(motion_proxy_ptr);
 					set_feedback(SUCCESS);
-					busy = false;
+					finalize();
 					return 1;
-					// finalize();
-					// return;
 				}
 				else
 				{
@@ -104,10 +104,8 @@ public:
 					UnBend2(motion_proxy_ptr);
 					// MoveBack(motion_proxy_ptr);
 					set_feedback(FAILURE);
-					busy = false;
+					finalize();
 					return 1;
-					// finalize();
-					// return;
 				}
 
 			}

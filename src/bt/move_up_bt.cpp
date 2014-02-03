@@ -60,6 +60,7 @@ public:
 	~GoToWaypoint()
 		{
 			delete motion_proxy_ptr;
+			delete speech_proxy_ptr;
 		}
 
 	void initialize()
@@ -134,12 +135,12 @@ public:
 							std::cout << "Closeness count " << closeness_count << std::endl;
 							closeness_count++;
 							//If the NAO has been close for enough iterations, we consider to goal reached
-							if (closeness_count > 3)
+							if (closeness_count > 0)
 							{
 								motion_proxy_ptr->stopMove();
 								set_feedback(SUCCESS);
-								std::cout << "sleeeping for 2 second before destroying thread" << std::endl;
-								sleep(2.0);
+								// std::cout << "sleeeping for 2 second before destroying thread" << std::endl;
+								// sleep(2.0);
 								finalize();
 								return 1;
 							}

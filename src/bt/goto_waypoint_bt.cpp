@@ -94,7 +94,7 @@ public:
 					std::cout << "Closeness count " << closeness_count << std::endl;
 					closeness_count++;
 					//If the NAO has been close for enough iterations, we consider to goal reached
-					if (closeness_count > 5)
+					if (closeness_count > 3)
 					{
 						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
