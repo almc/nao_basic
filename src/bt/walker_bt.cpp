@@ -63,7 +63,7 @@ public:
 			has_succeeded = false;
 			closeness_count = 0;
 			init_ = false;
-			deactivate();
+			// deactivate();
 		}
 
 	int executeCB(ros::Duration dt)
@@ -119,7 +119,7 @@ public:
 				// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
 				AL::ALValue walk_config;
 				walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
-				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01)); //Lower value of step height gives smoother walking
+				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01)); // Lower value of step height gives smoother walking
 
 				motion_proxy_ptr->post.moveTo(error_x, error_y, 0.0, walk_config);
 			}

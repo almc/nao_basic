@@ -96,7 +96,6 @@ public:
 					{
 						set_feedback(SUCCESS);
 						return 1;
-						// return;
 					}
 					else
 					{
@@ -110,9 +109,7 @@ public:
 				in_check_hand_pose_ = false;
 				set_feedback(FAILURE);
 				return 1;
-				// return;
 			}
-
 			set_feedback(RUNNING);
 			return 0;
 		}
