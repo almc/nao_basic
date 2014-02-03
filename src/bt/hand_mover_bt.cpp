@@ -55,7 +55,7 @@ public:
 			                                         stiffness,
 			                                         stiffness_time);
 			motion_proxy_ptr->moveInit();
-			set_feedback(RUNNING);
+			send_feedback(RUNNING);
 		}
 
 	void finalize()
@@ -65,7 +65,7 @@ public:
 			delete motion_proxy_ptr;
 		}
 
-	int executeCB(ros::Duration dt)
+	void executeCB(ros::Duration dt)
 		{
 			std::cout << "**HandMover -%- Executing Main Task, elapsed_time: "
 			          << dt.toSec() << std::endl;
@@ -84,8 +84,8 @@ public:
 				Bend(motion_proxy_ptr);
 				has_bent_ = true;
 				static_ball_pos_ = last_ball_pos_;
-				set_feedback(RUNNING);
-				return 0;
+				send_feedback(RUNNING);
+				return;
 				// AL::ALValue stiffness_name("RArm");
 				// AL::ALValue stiffness(0.0f);
 				// AL::ALValue stiffness_time(1.0f);
@@ -113,14 +113,14 @@ public:
 					float hand_pos_error = MoveHand(motion_proxy_ptr, static_ball_pos_.x, static_ball_pos_.y+y_compensation, 0.15);
 					if (hand_pos_error < 0.03)
 					{
-						set_feedback(SUCCESS);
+						send_feedback(SUCCESS);
 						// has_succeeded_ = true;
-						return 1;
+						return;
 					}
 					else
 					{
-						set_feedback(RUNNING);
-						return 0;
+						send_feedback(RUNNING);
+						return;
 					}
 					// std::cout << "Grasped!" << std::endl;
 					// has_moved_hand_ = true;

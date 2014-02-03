@@ -16,9 +16,6 @@ find_package(ALPROXIES REQUIRED)
 find_package(ALVISION  REQUIRED)
 find_package(ALVALUE   REQUIRED)
 
-
-
-
 rosbuild_init()
 
 # Settings
@@ -83,16 +80,13 @@ rosbuild_add_executable(WalkerBT src/bt/walker_bt.cpp src/common/robot_config.cp
 target_link_libraries(WalkerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(WalkerBT thread program_options)
 
+# rosbuild_add_executable(MissionFailedBT src/bt/mission_failed_bt.cpp src/common/robot_config.cpp)
+# target_link_libraries(MissionFailedBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+# rosbuild_link_boost(MissionFailedBT thread program_options)
 
-rosbuild_add_executable(MissionFailedBT src/bt/mission_failed_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(MissionFailedBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(MissionFailedBT thread program_options)
-
-
-rosbuild_add_executable(HandMover22ndBT src/bt/hand_mover22nd_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
-target_link_libraries(HandMover22ndBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(HandMover22ndBT thread program_options)
-
+# rosbuild_add_executable(HandMover22ndBT src/bt/hand_mover22nd_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
+# target_link_libraries(HandMover22ndBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+# rosbuild_link_boost(HandMover22ndBT thread program_options)
 
 rosbuild_add_executable(Walker2ndBT src/bt/walker2nd_bt.cpp src/common/robot_config.cpp)
 target_link_libraries(Walker2ndBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
@@ -118,6 +112,10 @@ rosbuild_add_executable(MoveRightBT src/bt/move_right_bt.cpp src/common/robot_co
 target_link_libraries(MoveRightBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
 rosbuild_link_boost(MoveRightBT thread program_options)
 
+rosbuild_add_executable(CycleBT src/bt/led_shine_bt.cpp src/common/robot_config.cpp)
+target_link_libraries(CycleBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
+rosbuild_link_boost(CycleBT thread program_options)
+
 rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
 target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
-# target_link_libraries(BallDetector alproxies alcommon alvision alvalue ${OpenCV_LIBS})
+target_link_libraries(BallDetector alproxies alcommon alvision alvalue ${OpenCV_LIBS})

@@ -83,6 +83,7 @@ public:
 				initialize();
 				init_ = true;
 				has_bent_ = false;
+				busy = true;
 				OpenHand(motion_proxy_ptr);
 				Bend2(motion_proxy_ptr);
 				MoveHand2(motion_proxy_ptr);
@@ -92,20 +93,25 @@ public:
 					speech_proxy_ptr->say("I have it, I rock");
 					UnBend2(motion_proxy_ptr);
 					set_feedback(SUCCESS);
-					finalize();
+					busy = false;
 					return 1;
+					// finalize();
+					// return;
 				}
 				else
 				{
-					speech_proxy_ptr->say("I miss it, bad luck. I will try it again");
+					speech_proxy_ptr->say("I miss it, bad luck.");
 					UnBend2(motion_proxy_ptr);
-					MoveBack(motion_proxy_ptr);
+					// MoveBack(motion_proxy_ptr);
 					set_feedback(FAILURE);
-					finalize();
+					busy = false;
 					return 1;
+					// finalize();
+					// return;
 				}
 
 			}
+			set_feedback(RUNNING); // this never happens
 			return 0;
 		}
 

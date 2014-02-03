@@ -238,12 +238,12 @@ void setupBallColor(std::string ball_color) {
 	int green_val_l = 42;
 	int green_val_h = 130;
 
-	int blue_hue_l = 60;
-	int blue_hue_h = 120;
-	int blue_sat_l = 60;
-	int blue_sat_h = 180;
-	int blue_val_l = 40;
-	int blue_val_h = 200;
+	int blue_hue_l = 74;
+	int blue_hue_h = 114;
+	int blue_sat_l = 96;
+	int blue_sat_h = 233;
+	int blue_val_l = 61;
+	int blue_val_h = 158;
 
 	int yellow_hue_l = 20;
 	int yellow_hue_h = 80;

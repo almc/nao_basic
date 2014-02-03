@@ -5,7 +5,7 @@
 
 #include <behavior_trees/rosaction.h>
 #include <nao_basic/robot_config.h>
-#include <nao_basic/action.h>
+#include <nao_basic/activity.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -152,7 +152,7 @@ public:
 			execute_time_ = (ros::Duration) 0;
 		}
 
-	void NewWaypointReceived(const nao_basic::action::ConstPtr &msg)
+	void NewWaypointReceived(const nao_basic::activity::ConstPtr &msg)
 		{
 			std::cout << "Received waypoint position!" << std::endl;
 			time_at_pos_ = ros::Time::now();
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	GoToWaypoint server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
-	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::action>("next_move", 1,
+	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::activity>("next_move", 1,
 	                                                        &GoToWaypoint::NewWaypointReceived,
 	                                                        &server);
 	ros::spin();

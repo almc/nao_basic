@@ -1,10 +1,15 @@
+#include <nao_basic/motions_common.h>
+
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <actionlib/client/simple_action_client.h>
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/Pose2D.h>
 
-#include <nao_basic/action.h>
+#include <nao_basic/activity.h>
+
+
+
 #include <behavior_trees/rosaction.h>
 #include <nao_basic/robot_config.h>
 
@@ -13,9 +18,15 @@
 #include <math.h>
 
 #include <alproxies/almotionproxy.h>
+#include <alproxies/altexttospeechproxy.h>
 #include <alerror/alerror.h>
 
+
 ros::Publisher chatter_pub;
+
+int counter=0;
+
+
 
 class GoToWaypoint : ROSAction
 {
@@ -23,7 +34,8 @@ public:
 	bool init_;
 	ros::Duration execute_time_;
 	ros::Time time_at_pos_;
-	geometry_msgs::Pose2D last_ball_pos_;
+	nao_basic::activity message_;
+	AL::ALTextToSpeechProxy* speech_proxy_ptr;
 	AL::ALMotionProxy* motion_proxy_ptr;
 
 	bool has_succeeded;
@@ -36,10 +48,13 @@ public:
 		time_at_pos_((ros::Time) 0),
 		has_succeeded(false),
 		closeness_count(0)
-		// last_ball_pos_(geometry_msgs::Pose2D(0,0,0))
+		// message_(geometry_msgs::Pose2D(0,0,0))
 		{
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
+
 			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
+			speech_proxy_ptr = new AL::ALTextToSpeechProxy(robot_ip, 9559);
+
 		}
 
 	~GoToWaypoint()
@@ -49,13 +64,20 @@ public:
 
 	void initialize()
 		{
+
+
 			// write "down" to ltl.planner
 			std_msgs::String msg;
 			std::stringstream ss;
 			ss << "down" << std::endl;
+			std::cout << "**AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGoToWaypoint -%- Executing Main Task, elapsed_time: " << std::endl;
+
 			msg.data = ss.str();
 			// ROS_INFO("%s", msg.data.c_str());
 			chatter_pub.publish(msg);
+			std::cout << "**msg:"
+			          << msg << std::endl;
+			counter++;
 
 			sleep(1.0);
 			//Set the stiffness so the robot can move
@@ -65,7 +87,10 @@ public:
 			motion_proxy_ptr->stiffnessInterpolation(stiffness_name,
 			                                         stiffness,
 			                                         stiffness_time);
-			motion_proxy_ptr->moveInit();
+			if( message_.type == "goto")
+				{
+				 motion_proxy_ptr->moveInit();
+				}
 			set_feedback(RUNNING);
 		}
 
@@ -85,73 +110,74 @@ public:
 			          << execute_time_.toSec() << std::endl;
 			execute_time_ += dt;
 
+			std::cout << "**Counter value:" << counter << std::endl;
+			if (counter > 1)
+				std::cout << "********************************************************************************" << std::endl;
+
+
 			if (!init_)
 			{
 				initialize();
 				init_ = true;
 			}
-			if ( (ros::Time::now() - time_at_pos_).toSec() < 0.2)
+			if ( (ros::Time::now() - time_at_pos_).toSec() < 0.2 )
 			{
-				//Goal position of ball relative to ROBOT_FRAME
-				float goal_x = 0.00;
-				float goal_y = 0.00;
-
-				float error_x = last_ball_pos_.x - goal_x;
-				float error_y = last_ball_pos_.y - goal_y;
-
-				if ((fabs(error_x) < 0.05 && fabs(error_y) < 0.05) || has_succeeded)
+				if( message_.type == "goto")
 				{
-					std::cout << "Closeness count " << closeness_count << std::endl;
-					closeness_count++;
-					//If the NAO has been close for enough iterations, we consider to goal reached
-					if (closeness_count > 5)
-					{
-						has_succeeded = true;
-						motion_proxy_ptr->stopMove();
-						set_feedback(SUCCESS);
-						finalize();
-					}
-					return 1;
+						// Goal position of ball relative to ROBOT_FRAME
+						float goal_x = 0.00;
+						float goal_y = 0.00;
+						float error_x = message_.x - goal_x;
+						float error_y = message_.y - goal_y;
+						if (fabs(error_x) < 0.12 && fabs(error_y) < 0.12)
+						{
+							std::cout << "Closeness count " << closeness_count << std::endl;
+							closeness_count++;
+							//If the NAO has been close for enough iterations, we consider to goal reached
+							if (closeness_count > 3)
+							{
+								motion_proxy_ptr->stopMove();
+								set_feedback(SUCCESS);
+								std::cout << "sleeeping for 2 second before destroying thread" << std::endl;
+								// sleep(2.0);
+								finalize();
+								return 1;
+							}
+						}
+						else
+						{
+							closeness_count = 0;
+						}
+						//Limit the "error" in order to limit the walk speed
+						error_x = error_x >  0.6 ?  0.6 : error_x;
+						error_x = error_x < -0.6 ? -0.6 : error_x;
+						error_y = error_y >  0.6 ?  0.6 : error_y;
+						error_y = error_y < -0.6 ? -0.6 : error_y;
+						// float speed_x = error_x * 1.0/(2+5*closeness_count);
+						// float speed_y = error_y * 1.0/(2+5*closeness_count);
+						// float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
+						// motion_proxy_ptr->setWalkTargetVelocity(speed_x, speed_y, 0.0, frequency);
+						// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
+						AL::ALValue walk_config;
+						//walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
+						//Lower value of step height gives smoother walking
+						// std::cout << "y " << message_.y << std::endl;
+						if (fabs(message_.y) < 0.10)
+						{
+							walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01));
+							motion_proxy_ptr->post.moveTo(message_.x, 0.0, 0.0, walk_config);
+							sleep(2.0);
+							//motion_proxy_ptr->post.stopMove();
+						}
+						else
+						{
+							walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.005));
+							motion_proxy_ptr->post.moveTo(0.0, 0.0, message_.y/fabs(message_.y)*0.1, walk_config);
+							//sleep(3.0);
+							//motion_proxy_ptr->post.stopMove();
+						}
 				}
-				else
-				{
-					closeness_count = 0;
-				}
-				//Limit the "error" in order to limit the walk speed
-				error_x = error_x >  0.6 ?  0.6 : error_x;
-				error_x = error_x < -0.6 ? -0.6 : error_x;
-				error_y = error_y >  0.6 ?  0.6 : error_y;
-				error_y = error_y < -0.6 ? -0.6 : error_y;
-				// float speed_x = error_x * 1.0/(2+5*closeness_count);
-				// float speed_y = error_y * 1.0/(2+5*closeness_count);
-				// float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
-				// motion_proxy_ptr->setWalkTargetVelocity(speed_x, speed_y, 0.0, frequency);
-				// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
-				AL::ALValue walk_config;
-				//walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
-				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01)); //Lower value of step height gives smoother walking
-				std::cout << "y " << last_ball_pos_.y << std::endl;
-				if (fabs (last_ball_pos_.y) < 0.08)
-				{
 
-					motion_proxy_ptr->post.moveTo(0.0, last_ball_pos_.x, 0.0, walk_config);
-				}
-				else
-				{
-
-					motion_proxy_ptr->post.moveTo(0.0, 0.0, atan2(last_ball_pos_.y,last_ball_pos_.x), walk_config);
-
-				}
-			}
-			else if (has_succeeded)
-			{
-				set_feedback(SUCCESS);
-				return 1;
-			}
-			else if ( (ros::Time::now() - time_at_pos_).toSec() > 0.2)
-			{
-				set_feedback(RUNNING);
-				return 0;
 			}
 			set_feedback(RUNNING);
 			return 0;
@@ -162,12 +188,14 @@ public:
 			execute_time_ = (ros::Duration) 0;
 		}
 
-	void NewWaypointReceived(const nao_basic::action::ConstPtr &msg)
+	void NewWaypointReceived(const nao_basic::activity::ConstPtr &msg)
 		{
-			std::cout << "Received waypoint position!" << std::endl;
 			time_at_pos_ = ros::Time::now();
-			last_ball_pos_.x = 0.01*msg->x;
-			last_ball_pos_.y = 0.01*msg->y;
+			message_.type = msg->type;
+			message_.x = 0.01*msg->x;
+			message_.y = 0.01*msg->y;
+			std::cout << "Message Type " << message_.type << std::endl;
+
 		}
 };
 
@@ -180,11 +208,12 @@ int main(int argc, char** argv)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	GoToWaypoint server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
-	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::action>("next_move", 1,
+
+
+	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::activity>("next_move", 1,
 	                                                        &GoToWaypoint::NewWaypointReceived,
 	                                                        &server);
-	ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-
+	chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
 	ros::spin();
 	return 0;
 }
