@@ -1094,7 +1094,7 @@ bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr)
 
 	const std::string name = "LHand";
 	float confidence = 0.9;
-        bool useSensors  = false; 
+        bool useSensors  = false;
 	std::vector<float> commandAngles;
 	std::vector<float> sensorAngles;
         commandAngles = motion_proxy_ptr->getAngles(name, useSensors);
@@ -1627,14 +1627,23 @@ names.push_back("LHand");
 times[4].arraySetSize(4);
 keys[4].arraySetSize(4);
 
-times[4][0] = 0.760000;
+times[4][0] = 0.560000;
 keys[4][0] = 0.00226893;
-times[4][1] = 1.12000;
+times[4][1] = 0.750492;
 keys[4][1] = 0.954497;
 times[4][2] = 1.92000;
 keys[4][2] = 0.95;
 times[4][3] = 2.72000;
 keys[4][3] = 0.95;
+
+// times[4][0] = 0.760000;
+// keys[4][0] = 0.00226893;
+// times[4][1] = 1.12000;
+// keys[4][1] = 0.954497;
+// times[4][2] = 1.92000;
+// keys[4][2] = 0.95;
+// times[4][3] = 2.72000;
+// keys[4][3] = 0.95;
 
 names.push_back("LShoulderPitch");
 times[5].arraySetSize(4);
@@ -1760,4 +1769,3 @@ catch(const std::exception&)
 }
 
 }
-

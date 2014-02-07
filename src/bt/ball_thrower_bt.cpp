@@ -21,12 +21,8 @@ class BallThrower : ROSAction
 {
 public:
 	bool init_;
-	//bool has_bent_;
-	//bool has_moved_hand_;
 	ros::Duration execute_time_;
 	ros::Time time_at_pos_;
-	//geometry_msgs::Pose2D last_ball_pos_;
-	//geometry_msgs::Pose2D static_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
 	AL::ALRobotPostureProxy* posture_proxy_ptr;
 	//AL::ALTextToSpeechProxy* speech_proxy_ptr;
@@ -34,8 +30,6 @@ public:
 	BallThrower(std::string name, std::string robot_ip):
 		ROSAction(name),
 		init_(false),
-		//has_bent_(false),
-		//has_moved_hand_(false),
 		execute_time_((ros::Duration) 0),
 		time_at_pos_((ros::Time) 0)
 		{
@@ -47,7 +41,10 @@ public:
 		}
 
 	~BallThrower()
-		{}
+		{
+			delete motion_proxy_ptr;
+			delete posture_proxy_ptr;
+		}
 
 	void initialize()
 		{
@@ -65,10 +62,7 @@ public:
 
 	void finalize()
 		{
-			//has_bent_ = false;
-			//has_moved_hand_ = false;
 			init_ = false;
-			delete motion_proxy_ptr;
 			deactivate();
 		}
 
@@ -84,9 +78,8 @@ public:
 			{
 				initialize();
 				init_ = true;
-				//has_bent_ = false;
 				Throw(motion_proxy_ptr);
-				posture_proxy_ptr->goToPosture("Crouch", 0.8);
+				// posture_proxy_ptr->goToPosture("Crouch", 0.8);
 				set_feedback(SUCCESS);
 				finalize();
 				return 1;
@@ -109,9 +102,6 @@ int main(int argc, char** argv)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	BallThrower server(ros::this_node::getName(), robot_ip);
 	//ros::NodeHandle n;
-	// ros::Subscriber ball_pos_sub = n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1,
-	//                                                                   &HandMover::BallPosReceived,
-	//                                                                   &server);
 	ros::spin();
 	return 0;
 }
