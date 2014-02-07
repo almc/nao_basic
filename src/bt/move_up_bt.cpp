@@ -165,15 +165,17 @@ public:
 						// std::cout << "y " << message_.y << std::endl;
 						if (fabs(message_.y) < 0.10)
 						{
-							walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01));
-							motion_proxy_ptr->post.moveTo(message_.x, 0.0, 0.0, walk_config);
+							// walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01));
+							// motion_proxy_ptr->post.moveTo(message_.x, 0.0, 0.0, walk_config);
+							motion_proxy_ptr->post.moveTo(message_.x, 0.0, 0.0);
 							sleep(2.0);
 							//motion_proxy_ptr->post.stopMove();
 						}
 						else
 						{
-							walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.005));
-							motion_proxy_ptr->post.moveTo(0.0, 0.0, message_.y/fabs(message_.y)*0.1, walk_config);
+							// walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.005));
+							// motion_proxy_ptr->post.moveTo(0.0, 0.0, message_.y/fabs(message_.y)*0.1, walk_config);
+							motion_proxy_ptr->post.moveTo(0.0, 0.0, message_.y/fabs(message_.y)*0.1);
 							//sleep(3.0);
 							//motion_proxy_ptr->post.stopMove();
 						}

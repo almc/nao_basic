@@ -11,25 +11,23 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <alerror/alerror.h>
 #include <alproxies/almotionproxy.h>
 #include <alproxies/altexttospeechproxy.h>
 #include <alproxies/alrobotpostureproxy.h>
-#include <alerror/alerror.h>
+#include <alproxies/alledsproxy.h>
 
 
 class LedShiner : ROSAction
 {
 public:
-	bool init_;
-	//bool has_bent_;
-	//bool has_moved_hand_;
-	ros::Duration execute_time_;
-	ros::Time time_at_pos_;
-	//geometry_msgs::Pose2D last_ball_pos_;
-	//geometry_msgs::Pose2D static_ball_pos_;
+bool init_;
+ros::Duration execute_time_;
+ros::Time time_at_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
 	AL::ALRobotPostureProxy* posture_proxy_ptr;
-	//AL::ALTextToSpeechProxy* speech_proxy_ptr;
+	AL::ALLedsProxy* leds_proxy_ptr;
+	AL::ALTextToSpeechProxy* speech_proxy_ptr;
 
 	LedShiner(std::string name, std::string robot_ip):
 		ROSAction(name),
@@ -41,13 +39,16 @@ public:
 		{
 			// std::string robotIP = "192.168.0.198";
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
-			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
+			motion_proxy_ptr  = new AL::ALMotionProxy(robot_ip, 9559);
 			posture_proxy_ptr = new AL::ALRobotPostureProxy(robot_ip, 9559);
-			//speech_proxy_ptr = new AL::ALTextToSpeechProxy(robot_ip, 9559);
+			leds_proxy_ptr    = new AL::ALLedsProxy(robot_ip, 9559);
+			speech_proxy_ptr  = new AL::ALTextToSpeechProxy(robot_ip, 9559);
 		}
 
 	~LedShiner()
-		{}
+		{
+			delete motion_proxy_ptr;
+		}
 
 	void initialize()
 		{
@@ -65,10 +66,7 @@ public:
 
 	void finalize()
 		{
-			//has_bent_ = false;
-			//has_moved_hand_ = false;
 			init_ = false;
-			delete motion_proxy_ptr;
 			deactivate();
 		}
 
@@ -84,9 +82,10 @@ public:
 			{
 				initialize();
 				init_ = true;
-				//has_bent_ = false;
-				//Throw(motion_proxy_ptr);
 				posture_proxy_ptr->goToPosture("Crouch", 0.8);
+				float duration = 3.0f;
+				leds_proxy_ptr->rasta(duration);
+				posture_proxy_ptr->goToPosture("StandInit", 1.0);
 				set_feedback(SUCCESS);
 				finalize();
 				return 1;

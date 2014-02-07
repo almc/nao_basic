@@ -8,8 +8,6 @@ from nao_basic.msg import pose, activity, confirmation
 from std_msgs.msg import String
 from math import sqrt, cos, sin
 
-
-
 # R4 = [40.0,  35.0]
 # C1 = [40.0, 105.0]
 # R1 = [40.0, 175.0]
@@ -22,16 +20,18 @@ from math import sqrt, cos, sin
 # C3 = [200.0, 105.0]
 # R3 = [200.0, 175.0]
 
-R4 = [22.0,  38.0]
+R4 = [30.0,  55.0]
+# R4 = [22.0,  38.0]
 C1 = [30.0,  94.0]
 R1 = [22.0, 147.0]
 
-R5 = [107.0,  37.0]
+R5 = [110.0,  62.0]
+# R5 = [107.0,  37.0]
 C2 = [102.0,  95.0]
 R2 = [108.0, 154.0]
 
-# R6 = [187.0,  29.0] # below it should be
-R6 = [187.0,  39.0]
+R6 = [187.0,  60.0]
+# R6 = [187.0,  39.0]
 C3 = [182.0,  93.0]
 R3 = [188.0, 155.0]
 

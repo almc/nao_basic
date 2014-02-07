@@ -168,7 +168,12 @@ public:
 				size_msg.data = pixels_ball;
 				ball_size_pub.publish(size_msg);
 				// Rotate head so that ball stays in view
-				TrackBallWithHead(&motionProxy, ballPosCam.first, ballPosCam.second, 320, 240);
+				std::cout << "pixels ball" << pixels_ball << std::endl;
+				if (pixels_ball > 8)
+					TrackBallWithHead(&motionProxy, ballPosCam.first, ballPosCam.second, 320, 240);
+				else
+					TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
+
 			}
 			cv::imshow("Display Window"     , image);
 			cv::imshow("Blob Window"        , image_clone1);

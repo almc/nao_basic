@@ -35,7 +35,6 @@ public:
 		// last_ball_pos_(geometry_msgs::Pose2D(0,0,0))
 		{
 			std::cout << "Robot ip to use is: " << robot_ip << std::endl;
-
 			motion_proxy_ptr = new AL::ALMotionProxy(robot_ip, 9559);
 		}
 
@@ -63,7 +62,7 @@ public:
 			has_succeeded = false;
 			closeness_count = 0;
 			init_ = false;
-			// deactivate();
+			deactivate();
 		}
 
 	int executeCB(ros::Duration dt)
@@ -88,20 +87,19 @@ public:
 				float error_x = last_ball_pos_.x - goal_x;
 				float error_y = last_ball_pos_.y - goal_y;
 
-				if ((fabs(error_x) < 0.05 && fabs(error_y) < 0.05) || has_succeeded)
+				if (fabs(error_x) < 0.05 && fabs(error_y) < 0.05)
 				{
 					std::cout << "Closeness count " << closeness_count << std::endl;
 					closeness_count++;
 					//If the NAO has been close for enough iterations, we consider to goal reached
 					if (closeness_count > 5)
 					{
-						has_succeeded = true;
 						motion_proxy_ptr->stopMove();
 						set_feedback(SUCCESS);
 						finalize();
 						return 1;
 					}
-					return 0;
+					// return 0;
 				}
 				else
 				{
@@ -120,21 +118,14 @@ public:
 				AL::ALValue walk_config;
 				walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
 				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01)); // Lower value of step height gives smoother walking
-
 				motion_proxy_ptr->post.moveTo(error_x, error_y, 0.0, walk_config);
 			}
-			else if (has_succeeded)
+			else
 			{
-				set_feedback(SUCCESS);
-				return 1;
-			}
-			else if ( (ros::Time::now() - time_at_pos_).toSec() > 0.2)
-			{
+				std::cout << "My ball position is too old, cant use it" << std::endl;
 				set_feedback(RUNNING);
 				return 0;
 			}
-			set_feedback(RUNNING);
-			return 0;
 		}
 
 	void resetCB()
