@@ -175,6 +175,7 @@ public:
 					TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
 
 			}
+			TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
 			cv::imshow("Display Window"     , image);
 			cv::imshow("Blob Window"        , image_clone1);
 			cv::waitKey(30);

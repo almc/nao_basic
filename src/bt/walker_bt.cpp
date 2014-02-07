@@ -81,8 +81,8 @@ public:
 			if ( (ros::Time::now() - time_at_pos_).toSec() < 0.2)
 			{
 				//Goal position of ball relative to ROBOT_FRAME
-				float goal_x = 0.16;
-				float goal_y = 0.11;
+				float goal_x = 0.15;
+				float goal_y = 0.09;
 
 				float error_x = last_ball_pos_.x - goal_x;
 				float error_y = last_ball_pos_.y - goal_y;
@@ -92,7 +92,7 @@ public:
 					std::cout << "Closeness count " << closeness_count << std::endl;
 					closeness_count++;
 					//If the NAO has been close for enough iterations, we consider to goal reached
-					if (closeness_count > 5)
+					if (closeness_count > 10)
 					{
 						motion_proxy_ptr->stopMove();
 						set_feedback(SUCCESS);

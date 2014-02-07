@@ -1091,21 +1091,21 @@ catch(const std::exception&)
 
 bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr)
 {
-
 	const std::string name = "LHand";
-	float confidence = 0.9;
-        bool useSensors  = false;
+	float confidence = 0.95;
 	std::vector<float> commandAngles;
 	std::vector<float> sensorAngles;
-        commandAngles = motion_proxy_ptr->getAngles(name, useSensors);
-        useSensors  = true;
-        sensorAngles = motion_proxy_ptr->getAngles(name, useSensors);
-	if (std::abs(commandAngles[0] / sensorAngles[0])< confidence ){
+	bool useSensors;
+	useSensors = false;
+	commandAngles = motion_proxy_ptr->getAngles(name, useSensors);
+	useSensors = true;
+	sensorAngles  = motion_proxy_ptr->getAngles(name, useSensors);
+	if (std::abs(commandAngles[0] / sensorAngles[0]) < confidence)
+	{
 		return true;
 	}
 	return false;
 }
-
 
 
 void Kickold(AL::ALMotionProxy* motion_proxy_ptr)
