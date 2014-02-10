@@ -1,0 +1,10 @@
+rosrun nao_basic MoveUpBT --robot_ip=192.168.1.127
+rosrun nao_basic MoveDownBT --robot_ip=192.168.1.127
+rosrun nao_basic MoveLeftBT --robot_ip=192.168.1.127
+rosrun nao_basic MoveRightBT --robot_ip=192.168.1.127
+rosrun nao_basic BallThrowerBT --robot_ip=192.168.1.127
+rosrun nao_basic HandMoverBT --robot_ip=192.168.1.127
+rosrun nao_basic BallGrasperBT --robot_ip=192.168.1.127
+rosrun nao_basic CycleBT --robot_ip=192.168.1.127
+rosrun nao_basic BallTrackerBT --robot_ip=192.168.1.127 --color=blue
+rosrun nao_basic WalkerBT --robot_ip=192.168.1.127
