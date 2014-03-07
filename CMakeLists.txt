@@ -1,113 +1,220 @@
-cmake_minimum_required(VERSION 2.6)
-project (NaoBasic)
-message(Compiling: ${PROJECT_NAME})
+cmake_minimum_required(VERSION 2.8.3)
+project(nao_basic)
 
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+find_package(catkin REQUIRED COMPONENTS
+  actionlib
+  actionlib_msgs
+  message_generation
+  roscpp
+  roslib
+  rospy
+  std_msgs
+  behavior_trees
+)
 
+# System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS system thread program_options)
+
+# NAO
 find_package(ALCOMMON  REQUIRED)
 find_package(ALPROXIES REQUIRED)
 find_package(ALVISION  REQUIRED)
 find_package(ALVALUE   REQUIRED)
 
-rosbuild_init()
+find_package(OpenCV    REQUIRED)
 
 # Settings
-add_definitions(-lglut -Wall -g -O0 -Wno-deprecated -static -Bstatic -std=gnu++0x)
+add_definitions(-Wall -g -O0 -Wno-deprecated -static -Bstatic -std=gnu++0x)
 
-# Includes
-set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/src/common)
-include_directories(${COMMON_INCLUDES})
+## Uncomment this if the package has a setup.py. This macro ensures
+## modules and global scripts declared therein get installed
+## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
+# catkin_python_setup()
 
-# Project source
+################################################
+## Declare ROS messages, services and actions ##
+################################################
+
+## To declare and build messages, services or actions from within this
+## package, follow these steps:
+## * Let MSG_DEP_SET be the set of packages whose message types you use in
+##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
+## * In the file package.xml:
+##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
+##   * If MSG_DEP_SET isn't empty the following dependencies might have been
+##     pulled in transitively but can be declared for certainty nonetheless:
+##     * add a build_depend tag for "message_generation"
+##     * add a run_depend tag for "message_runtime"
+## * In this file (CMakeLists.txt):
+##   * add "message_generation" and every package in MSG_DEP_SET to
+##     find_package(catkin REQUIRED COMPONENTS ...)
+##   * add "message_runtime" and every package in MSG_DEP_SET to
+##     catkin_package(CATKIN_DEPENDS ...)
+##   * uncomment the add_*_files sections below as needed
+##     and list every .msg/.srv/.action file to be processed
+##   * uncomment the generate_messages entry below
+##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
+
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  activity.msg
+)
+
+## Generate services in the 'srv' folder
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
+
+## Generate actions in the 'action' folder
+# add_action_files(
+#   FILES
+#   Action1.action
+#   Action2.action
+# )
+
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+#   DEPENDENCIES
+#   actionlib_msgs#   std_msgs
+)
+
+###################################
+## catkin specific configuration ##
+###################################
+## The catkin_package macro generates cmake config files for your package
+## Declare things to be passed to dependent projects
+## INCLUDE_DIRS: uncomment this if you package contains header files
+## LIBRARIES: libraries you create in this project that dependent projects also need
+## CATKIN_DEPENDS: catkin_packages dependent projects also need
+## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+ INCLUDE_DIRS include
+#  LIBRARIES nao_basic
+#  CATKIN_DEPENDS actionlib actionlib_msgs roscpp roslib rospy std_msgs
+  DEPENDS bt_server
+  DEPENDS Boost
+)
+
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+include_directories(include)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${ALCOMMON_INCLUDE_DIRS}
+)
+
+## Declare a cpp library
+# add_library(nao_basic
+#   src/${PROJECT_NAME}/nao_basic.cpp
+# )
+
+## Declare a cpp executable
+# add_executable(nao_basic_node src/nao_basic_node.cpp)
+
 file(GLOB_RECURSE COMMON_SRC ${PROJECT_SOURCE_DIR}/src/common/*.cpp)
+set(COMMON_LIB ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
 
-#########################################################
-# FIND ALDEBARAN (naoqi-sdk-1.14.3-linux64/include /lib
-#########################################################
-include_directories(${ALCOMMON_INCLUDE_DIRS})
+add_executable(BallTrackerBT src/bt/ball_tracker_bt.cpp ${COMMON_SRC})
+target_link_libraries(BallTrackerBT ${COMMON_LIB})
 
-#########################################################
-# FIND OPENCV
-#########################################################
-find_package(rosbuild REQUIRED COMPONENTS behavior_trees)
-find_package(OpenCV REQUIRED)
+add_executable(BallGrasperBT src/bt/ball_grasper_bt.cpp ${COMMON_SRC})
+target_link_libraries(BallGrasperBT ${COMMON_LIB})
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+add_executable(BallThrowerBT src/bt/ball_thrower_bt.cpp ${COMMON_SRC})
+target_link_libraries(BallThrowerBT ${COMMON_LIB})
 
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-# rosbuild_gensrv()
+add_executable(WalkerBT src/bt/walker_bt.cpp ${COMMON_SRC})
+target_link_libraries(WalkerBT ${COMMON_LIB})
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+add_executable(HandMoverBT src/bt/hand_mover_bt.cpp ${COMMON_SRC})
+target_link_libraries(HandMoverBT ${COMMON_LIB})
 
-# rosbuild_add_executable(TestBT src/bt/template_bt.cpp)
-# rosbuild_link_boost(TestBT thread)
+add_executable(GoToWaypointBT src/bt/goto_waypoint_bt.cpp ${COMMON_SRC})
+target_link_libraries(GoToWaypointBT ${COMMON_LIB})
 
-rosbuild_add_executable(BallTrackerBT src/bt/ball_tracker_bt.cpp ${COMMON_SRC})
-target_link_libraries(BallTrackerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
-rosbuild_link_boost(BallTrackerBT thread program_options)
+add_executable(MoveUpBT src/bt/move_up_bt.cpp ${COMMON_SRC})
+target_link_libraries(MoveUpBT ${COMMON_LIB})
 
-rosbuild_add_executable(BallGrasperBT src/bt/ball_grasper_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
-target_link_libraries(BallGrasperBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(BallGrasperBT thread program_options)
+add_executable(MoveDownBT src/bt/move_down_bt.cpp ${COMMON_SRC})
+target_link_libraries(MoveDownBT ${COMMON_LIB})
 
-rosbuild_add_executable(BallThrowerBT src/bt/ball_thrower_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
-target_link_libraries(BallThrowerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(BallThrowerBT thread program_options)
+add_executable(MoveLeftBT src/bt/move_left_bt.cpp ${COMMON_SRC})
+target_link_libraries(MoveLeftBT ${COMMON_LIB})
 
-rosbuild_add_executable(WalkerBT src/bt/walker_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(WalkerBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(WalkerBT thread program_options)
+add_executable(MoveRightBT src/bt/move_right_bt.cpp ${COMMON_SRC})
+target_link_libraries(MoveRightBT ${COMMON_LIB})
 
-rosbuild_add_executable(HandMoverBT src/bt/hand_mover_bt.cpp src/common/motions_common.cpp src/common/robot_config.cpp)
-target_link_libraries(HandMoverBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(HandMoverBT thread program_options)
-
-# rosbuild_add_executable(MissionFailedBT src/bt/mission_failed_bt.cpp src/common/robot_config.cpp)
-# target_link_libraries(MissionFailedBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-# rosbuild_link_boost(MissionFailedBT thread program_options)
-
-rosbuild_add_executable(GoToWaypointBT src/bt/goto_waypoint_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(GoToWaypointBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(GoToWaypointBT thread program_options)
-
-rosbuild_add_executable(MoveUpBT src/bt/move_up_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(MoveUpBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(MoveUpBT thread program_options)
-
-rosbuild_add_executable(MoveDownBT src/bt/move_down_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(MoveDownBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(MoveDownBT thread program_options)
-
-rosbuild_add_executable(MoveLeftBT src/bt/move_left_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(MoveLeftBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(MoveLeftBT thread program_options)
-
-rosbuild_add_executable(MoveRightBT src/bt/move_right_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(MoveRightBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(MoveRightBT thread program_options)
-
-rosbuild_add_executable(CycleBT src/bt/led_shine_bt.cpp src/common/robot_config.cpp)
-target_link_libraries(CycleBT ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVALUE_LIBRARIES})
-rosbuild_link_boost(CycleBT thread program_options)
+add_executable(CycleBT src/bt/led_shine_bt.cpp ${COMMON_SRC})
+target_link_libraries(CycleBT ${COMMON_LIB})
 
 # rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
 # target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
 # target_link_libraries(BallDetector alproxies alcommon alvision alvalue ${OpenCV_LIBS})
+
+## Add cmake target dependencies of the executable/library
+## as an example, message headers may need to be generated before nodes
+# add_dependencies(nao_basic_node nao_basic_generate_messages_cpp)
+
+## Specify libraries to link a library or executable target against
+# target_link_libraries(nao_basic_node
+#   ${catkin_LIBRARIES}
+# )
+
+#############
+## Install ##
+#############
+
+# all install targets should use catkin DESTINATION variables
+# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+
+## Mark executable scripts (Python etc.) for installation
+## in contrast to setup.py, you can choose the destination
+# install(PROGRAMS
+#   scripts/my_python_script
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark executables and/or libraries for installation
+# install(TARGETS nao_basic nao_basic_node
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+## Mark cpp header files for installation
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   FILES_MATCHING PATTERN "*.h"
+#   PATTERN ".svn" EXCLUDE
+# )
+
+## Mark other files for installation (e.g. launch and bag files, etc.)
+# install(FILES
+#   # myfile1
+#   # myfile2
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
+
+#############
+## Testing ##
+#############
+
+## Add gtest based cpp test target and link libraries
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_nao_basic.cpp)
+# if(TARGET ${PROJECT_NAME}-test)
+#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+# endif()
+
+## Add folders to be run by python nosetests
+# catkin_add_nosetests(test)

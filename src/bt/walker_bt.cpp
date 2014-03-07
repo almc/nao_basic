@@ -22,8 +22,8 @@ public:
 	geometry_msgs::Pose2D last_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
 
-	int closeness_count;
 	bool has_succeeded;
+	int closeness_count;
 
 	Walker(std::string name, std::string robot_ip):
 		ROSAction(name),
@@ -110,8 +110,8 @@ public:
 				error_x = error_x < -0.6 ? -0.6 : error_x;
 				error_y = error_y >  0.6 ?  0.6 : error_y;
 				error_y = error_y < -0.6 ? -0.6 : error_y;
-				float speed_x = error_x * 1.0/(2+5*closeness_count);
-				float speed_y = error_y * 1.0/(2+5*closeness_count);
+				// float speed_x = error_x * 1.0/(2+5*closeness_count);
+				// float speed_y = error_y * 1.0/(2+5*closeness_count);
 				float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y)))); //Frequency of foot steps
 				// motion_proxy_ptr->setWalkTargetVelocity(speed_x, speed_y, 0.0, frequency);
 				// ALMotionProxy::setWalkTargetVelocity(const float& x, const float& y, const float& theta, const float& frequency)
@@ -126,6 +126,8 @@ public:
 				set_feedback(RUNNING);
 				return 0;
 			}
+			set_feedback(RUNNING);
+			return 0;
 		}
 
 	void resetCB()
