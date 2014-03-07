@@ -1,5 +1,5 @@
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef ROBOT_CONFIG_H_
+#define ROBOT_CONFIG_H_
 
 #include <boost/program_options.hpp>
 
