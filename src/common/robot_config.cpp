@@ -51,3 +51,13 @@ std::string readColorFromCmdLine(int argc, char** argv)
 	}
 	return color_string;
 }
+
+std::string readAgentFromCmdLine(int argc, char** argv)
+{
+	std::string agent_string = readCmdLineOption(argc, argv, "agent");
+	if (agent_string.length() < 1)
+	{
+		agent_string = "default";
+	}
+	return agent_string;
+}

@@ -164,13 +164,17 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "GoToWaypoint"); // name used for bt.txt
+	// specify which options are available as cmd line arguments
+	setupCmdLineReader();
+	// read agent id from command line parameters (--agent=mario)
+	std::string agent = readAgentFromCmdLine(argc, argv);
+	ros::init(argc, argv, std::string("GoToWaypoint") + "_" + agent); // name used for bt.txt
 	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	setupCmdLineReader();
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	GoToWaypoint server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
-	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::activity>("next_move", 1,
+	ros::Subscriber ball_pos_sub = n.subscribe<nao_basic::activity>(std::string("next_move") + "_" + agent, 1,
 	                                                        &GoToWaypoint::NewWaypointReceived,
 	                                                        &server);
 	ros::spin();

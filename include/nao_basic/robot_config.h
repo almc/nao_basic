@@ -10,5 +10,6 @@ void addCmdLineOption(std::string argumentName);
 std::string readCmdLineOption(std::string argumentName);
 std::string readRobotIPFromCmdLine(int argc, char** argv);
 std::string readColorFromCmdLine(int argc, char** argv);
+std::string readAgentFromCmdLine(int argc, char** argv);
 
 #endif
