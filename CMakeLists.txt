@@ -62,6 +62,7 @@ add_definitions(-Wall -g -O0 -Wno-deprecated -static -Bstatic -std=gnu++0x)
 add_message_files(
   FILES
   activity.msg
+  confirmation.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -157,6 +158,9 @@ target_link_libraries(MoveRightBT ${COMMON_LIB})
 
 add_executable(CycleBT src/bt/led_shine_bt.cpp ${COMMON_SRC})
 target_link_libraries(CycleBT ${COMMON_LIB})
+
+add_executable(DispatcherBT src/bt/action_dispatcher_bt.cpp ${COMMON_SRC})
+target_link_libraries(DispatcherBT ${COMMON_LIB})
 
 # rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
 # target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})

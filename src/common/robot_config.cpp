@@ -5,6 +5,7 @@ po::options_description desc("Allowed options");
 void setupCmdLineReader()
 {
 	addCmdLineOption("robot_ip");
+	addCmdLineOption("agent");
 	addCmdLineOption("color");
 }
 
