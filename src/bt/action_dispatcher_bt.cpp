@@ -105,20 +105,18 @@ public:
 	int GotoWP_Function()
 		{
 			std::cout << "*** GotoWP_Function(): " << std::endl;
-			//Goal position of ball relative to ROBOT_FRAME
-			float goal_x = 0.00;
-			float goal_y = 0.00;
-			// float error_x = goal_position_.x - goal_x;
-			// float error_y = goal_position_.y - goal_y;
 			AL::ALValue walk_config;
 			// walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
-			// walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01));
-			if (fabs (goal_position_.y) < 0.08)
+			walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.005));
+			if (fabs (goal_position_.y) < 0.10)
 			{
-				motion_proxy_ptr->post.moveTo(0.0, goal_position_.x, 0.0, walk_config);
+				// std::cout << "case1: moving to " << goal_position_ << std::endl;
+				motion_proxy_ptr->post.moveTo(goal_position_.x, 0.0, 0.0, walk_config);
+				sleep(2.0);
 			}
 			else
 			{
+				// std::cout << "case2: moving to " << goal_position_ << std::endl;
 				motion_proxy_ptr->post.moveTo(0.0, 0.0,
 				                              atan2(goal_position_.y, goal_position_.x),
 				                              walk_config);
@@ -182,7 +180,7 @@ public:
 			activity_name_   = msg->type;
 			goal_position_.x = 0.01*msg->x;
 			goal_position_.y = 0.01*msg->y;
-			std::cout << activity_name_ << std::endl;
+			std::cout << activity_name_   << std::endl;
 			std::cout << goal_position_.x << std::endl;
 			std::cout << goal_position_.y << std::endl;
 		}

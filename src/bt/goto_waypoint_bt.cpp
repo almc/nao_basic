@@ -120,17 +120,18 @@ public:
 				AL::ALValue walk_config;
 				//walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
 				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01)); //Lower value of step height gives smoother walking
-				std::cout << "y " << last_ball_pos_.y << std::endl;
-				if (fabs (last_ball_pos_.y) < 0.08)
+				if (fabs (last_ball_pos_.y) < 0.10)
 				{
-
-					motion_proxy_ptr->post.moveTo(0.0, last_ball_pos_.x, 0.0, walk_config);
+					// std::cout << "case1: moving to " << last_ball_pos_ << std::endl;
+					motion_proxy_ptr->post.moveTo(last_ball_pos_.x, 0.0, 0.0, walk_config);
+					sleep(2.0);	// important to have the sleep here
 				}
 				else
 				{
-
-					motion_proxy_ptr->post.moveTo(0.0, 0.0, atan2(last_ball_pos_.y,last_ball_pos_.x), walk_config);
-
+					// std::cout << "case2: moving to " << last_ball_pos_ << std::endl;
+					motion_proxy_ptr->post.moveTo(0.0, 0.0,
+					                              atan2(last_ball_pos_.y, last_ball_pos_.x),
+					                              walk_config);
 				}
 			}
 			else if (has_succeeded)
