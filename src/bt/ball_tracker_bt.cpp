@@ -54,7 +54,6 @@ public:
 
 	ros::Duration execute_time_;
 	bool init;
-
 	AL::ALMotionProxy motionProxy;
 	AL::ALVideoDeviceProxy camProxy;
 	cv::Mat image;
@@ -73,7 +72,6 @@ public:
 
 	~BallTracker()
 		{
-			std::cout << "Called finalize on bt node" << std::endl;
 			finalize();
 		}
 
@@ -94,8 +92,6 @@ public:
 
 	void finalize()
 		{
-			// disableStiffness();
-			// Clean up before exiting!
 			ball_tracker_finalize();
 			camProxy.unsubscribe(clientName);
 		}
@@ -107,35 +103,20 @@ public:
 			std::cout << "**Ball tracker -%- execute_time: "
 			          << execute_time_.toSec() << std::endl;
 			execute_time_ += dt;
-
 			if (!init) {
 				initialize();
 				init = true;
 			}
-
 			AL::ALValue img = camProxy.getImageRemote(clientName);
 			image.data = (uchar*) img[6].GetBinary();
 			camProxy.releaseImage(clientName);
-
 			cv::Mat image_clone1 = image.clone();
 			cv::Mat image_clone2 = image.clone();
-
-			// std::cout << typeid(cv_ptr->image).name() << std::endl;
-
-			// std::pair<int, int> ballPosCam = GetThresholdedImage(image_clone1, image_clone2,
-			//                                                      blue_hue_l, blue_hue_h, blue_sat_l,
-			//                                                      blue_sat_h, blue_val_l, blue_val_h,
-			//                                                      CV_RGB(0,0,255));
-
 			int pixels_ball = -1;
-			// nr_pixels_ball_ptr = &init_ptr_value;
 			std::pair<int,int> ballPosCam(-1, -1);
 			if (hue_l_2 != -1 && hue_h_2 != -1 && sat_l_2 != -1 &&
 			    sat_h_2 != -1 && val_l_2 != -1 && val_h_2 != -1)
 			{
-
-				// Two threshold ranges are used for example for red
-
 				ballPosCam = GetThresholdedImage(image_clone1, image_clone2,
 				                                 hue_l, hue_h, sat_l,
 				                                 sat_h, val_l, val_h,
@@ -147,19 +128,20 @@ public:
 			}
 			else
 			{
-				// Only one threshold range used
 				ballPosCam = GetThresholdedImage(image_clone1, image_clone2,
 				                                 hue_l, hue_h, sat_l,
 				                                 sat_h, val_l, val_h,
 				                                 CV_RGB(0,0,255),
 				                                 &pixels_ball);
 			}
-			// If ball was found
-			if (ballPosCam.first != -1)
+			if (ballPosCam.first != -1) // found something
 			{
-				// Publish ball position and size on ros topics
-				std::pair<float, float> ballPosWorld = worldBallPosFromImgCoords(motionProxy, ballPosCam, 320, 240, 1);
-				std::cout << "Ball pos in world: (" << ballPosWorld.first << ", " << ballPosWorld.second << ")" << std::endl;
+				// publish ball position and size on ros topics
+				std::pair<float, float> ballPosWorld =
+					worldBallPosFromImgCoords(motionProxy, ballPosCam, 320, 240, 1);
+				// std::cout << "Ball pos in world: ("
+				//           << ballPosWorld.first << ", "
+				//           << ballPosWorld.second << ")" << std::endl;
 				geometry_msgs::Pose2D msg;
 				msg.x = ballPosWorld.first;
 				msg.y = ballPosWorld.second;
@@ -167,15 +149,17 @@ public:
 				std_msgs::Int8 size_msg;
 				size_msg.data = pixels_ball;
 				ball_size_pub.publish(size_msg);
-				// Rotate head so that ball stays in view
-				std::cout << "pixels ball" << pixels_ball << std::endl;
-				if (pixels_ball > 8)
+				// std::cout << "pixels ball" << pixels_ball << std::endl;
+				// rotate head so that ball stays in view
+				if (pixels_ball > 8) // found something big enough
 					TrackBallWithHead(&motionProxy, ballPosCam.first, ballPosCam.second, 320, 240);
-				else
+				else                 // found something not big enough
 					TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
-
 			}
-			TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
+			else                     // found nothing
+			{
+				TrackBallWithHead(&motionProxy, 320/2, 240/2, 320, 240);
+			}
 			cv::imshow("Display Window"     , image);
 			cv::imshow("Blob Window"        , image_clone1);
 			cv::waitKey(30);
@@ -189,16 +173,18 @@ public:
 
 };
 
+
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
 	//Specify which options are available as cmd line arguments
 	setupCmdLineReader();
-	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
+	// read agent id from command line parameters (--agent=mario)
+	std::string agent = readAgentFromCmdLine(argc, argv);
+	// read robot ip from command line parameters (--robot_ip=mario.local)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
-	//Read ball color from command line arguments
+	// read ball color from command line arguments (--color=red)
 	std::string ball_color = readColorFromCmdLine(argc, argv);
-	std::cout << "Using ball color: " << ball_color << std::endl;
 	setupBallColor(ball_color);
 	std::string bt_node_name = "BallTrackerRed";
 	if (ball_color == "red") {
@@ -210,25 +196,26 @@ int main(int argc, char** argv)
 	} else if (ball_color == "yellow") {
 		bt_node_name = "BallTrackerYellow";
 	}
-	ros::init(argc, argv, bt_node_name); // name used for bt.txt
+	ros::init(argc, argv, bt_node_name + "_" + agent); // name used for bt.txt
 	ros::NodeHandle n;
-	ball_pos_pub = n.advertise<geometry_msgs::Pose2D>("ball_pos", 1000);
-	ball_size_pub = n.advertise<std_msgs::Int8>("ball_size", 1000);
+	ball_pos_pub  =
+		n.advertise<geometry_msgs::Pose2D>(std::string("ball_pos") + "_" + agent, 1000);
+	ball_size_pub =
+		n.advertise<std_msgs::Int8>(std::string("ball_size") + "_" + agent, 1000);
 	BallTracker server(ros::this_node::getName(), robot_ip);
 	ros::spin();
 	return 0;
 }
 
-void setupBallColor(std::string ball_color) {
 
+void setupBallColor(std::string ball_color)
+{
 	int red_hue_l = 0;
 	int red_hue_h = 16;
 	int red_sat_l = 152;
 	int red_sat_h = 255;
 	int red_val_l = 40;
 	int red_val_h = 255;
-
-
 
 	int red_hue_l_2 = 0;
 	int red_hue_h_2 = 21;

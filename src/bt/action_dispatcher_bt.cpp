@@ -1,4 +1,5 @@
 #include <behavior_trees/rosaction.h>
+#include <nao_basic/motions_common.h>
 #include <nao_basic/robot_config.h>
 #include <nao_basic/activity.h>
 #include <nao_basic/confirmation.h>
@@ -20,7 +21,9 @@ public:
 	bool init_;
 	ros::Duration execute_time_;
 	ros::Time msg_timestamp_;
+	ros::Time time_at_pos_;
 	geometry_msgs::Pose2D goal_position_;
+	geometry_msgs::Pose2D last_ball_pos_;
 	AL::ALMotionProxy* motion_proxy_ptr;
 	AL::ALRobotPostureProxy* posture_proxy_ptr;
 	AL::ALLedsProxy* leds_proxy_ptr;
@@ -89,16 +92,18 @@ public:
 			msg_conf.name = "crouch";
 			msg_conf.done = 1;
 			confirmation_pub.publish(msg_conf);
+			activity_name_ = "none";
 			return 0;
 		}
 
 	int Idle_Function()
 		{
 			std::cout << "*** Idle_Function(): " << std::endl;
-			nao_basic::confirmation msg_conf;
-			msg_conf.name = "idle";
-			msg_conf.done = 1;
-			confirmation_pub.publish(msg_conf);
+			// nao_basic::confirmation msg_conf;
+			// msg_conf.name = "idle";
+			// msg_conf.done = 1;
+			// confirmation_pub.publish(msg_conf);
+			// activity_name_ = "none";
 			return 0;
 		}
 
@@ -112,7 +117,7 @@ public:
 			{
 				// std::cout << "case1: moving to " << goal_position_ << std::endl;
 				motion_proxy_ptr->post.moveTo(goal_position_.x, 0.0, 0.0, walk_config);
-				sleep(2.0);
+				sleep(1.0);
 			}
 			else
 			{
@@ -121,16 +126,96 @@ public:
 				                              atan2(goal_position_.y, goal_position_.x),
 				                              walk_config);
 			}
+			activity_name_ = "none";
 			return 0;
 		}
 
+	int ThrowBall_Function()
+		{
+			std::cout << "*** ThrowBall_Function(): " << std::endl;
+			sleep(2.0);
+			Throw(motion_proxy_ptr);
+			sleep(2.0);
+			nao_basic::confirmation msg_conf;
+			msg_conf.name = "throw";
+			msg_conf.done = 1;
+			confirmation_pub.publish(msg_conf);
+			activity_name_ = "none";
+			return 0;
+		}
+
+	int GraspBall_Function()
+		{
+			std::cout << "*** GraspBall_Function(): " << std::endl;
+			// if ((ros::Time::now() - time_at_pos_).toSec() < 0.2)
+			if (true)
+			{
+				float goal_x = 0.15;
+				float goal_y = 0.09;
+				float error_x = last_ball_pos_.x - goal_x;
+				float error_y = last_ball_pos_.y - goal_y;
+				if (fabs(error_x) < 0.05 && fabs(error_y) < 0.05)
+				{
+					std::cout << "Closeness count " << closeness_count << std::endl;
+					closeness_count++;
+					if (closeness_count > 10)
+					{
+						motion_proxy_ptr->stopMove();
+						// ****************************************
+						OpenHand(motion_proxy_ptr);
+						Bend2(motion_proxy_ptr);
+						MoveHand2(motion_proxy_ptr);
+						CloseHand(motion_proxy_ptr);
+						if (CheckLHand(motion_proxy_ptr))
+						{
+							speech_proxy_ptr->say("I have it, I rock");
+							UnBend2(motion_proxy_ptr);
+							// confirmation
+							nao_basic::confirmation msg_conf;
+							msg_conf.name = "grasp";
+							msg_conf.done = 1;
+							confirmation_pub.publish(msg_conf);
+							activity_name_ = "none";
+							return 0;
+						}
+						else
+						{
+							speech_proxy_ptr->say("I missed it, bad luck.");
+							UnBend2(motion_proxy_ptr);
+							MoveBack(motion_proxy_ptr);
+							activity_name_ = "grasp";
+							closeness_count = 0;
+							return 0;
+						}
+						// ****************************************
+					}
+					// return 0;
+				}
+				else
+				{
+					closeness_count = 0;
+				}
+				error_x = error_x >  0.6 ?  0.6 : error_x;
+				error_x = error_x < -0.6 ? -0.6 : error_x;
+				error_y = error_y >  0.6 ?  0.6 : error_y;
+				error_y = error_y < -0.6 ? -0.6 : error_y;
+				AL::ALValue walk_config;
+				float frequency = 0.1/(5*closeness_count+(1.0/(fabs(error_x)+fabs(error_y))));
+				walk_config.arrayPush(AL::ALValue::array("MaxStepFrequency", frequency));
+				walk_config.arrayPush(AL::ALValue::array("StepHeight", 0.01));
+				motion_proxy_ptr->post.moveTo(error_x, error_y, 0.0, walk_config);
+			}
+			else
+			{
+				std::cout << "My ball position is too old, cant use it" << std::endl;
+			}
+			set_feedback(RUNNING);
+			return 0;
+		}
+
+
 	int executeCB(ros::Duration dt)
 		{
-			// std::cout << "**ActionDispatcher -%- Executing Main Task, elapsed_time: "
-			//           << dt.toSec() << std::endl;
-			// std::cout << "**ActionDispatcher -%- execute_time: "
-			//           << execute_time_.toSec() << std::endl;
-			// execute_time_ += dt;
 			if (!init_)
 			{
 				initialize();
@@ -154,6 +239,18 @@ public:
 				set_feedback(RUNNING);
 				return GotoWP_Function();
 			}
+			else if (!activity_name_.compare("grasp"))
+			{
+				std::cout << "Received Grasp" << std::endl;
+				set_feedback(RUNNING);
+				return GraspBall_Function();
+			}
+			else if (!activity_name_.compare("throw"))
+			{
+				std::cout << "Received Throw" << std::endl;
+				set_feedback(RUNNING);
+				return ThrowBall_Function();
+			}
 			else if (!activity_name_.compare("none"))
 			{
 				std::cout << "Received Nothing" << std::endl;
@@ -163,6 +260,7 @@ public:
 			else
 			{
 				set_feedback(RUNNING);
+				activity_name_ = "none";
 				return 0;
 			}
 		}
@@ -184,6 +282,15 @@ public:
 			std::cout << goal_position_.x << std::endl;
 			std::cout << goal_position_.y << std::endl;
 		}
+
+	void BallPosReceivedCB(const geometry_msgs::Pose2D::ConstPtr &msg)
+		{
+			std::cout << "Received ball position" << std::endl;
+			time_at_pos_ = ros::Time::now();
+			last_ball_pos_.x = msg->x;
+			last_ball_pos_.y = msg->y;
+		}
+
 };
 
 int main(int argc, char** argv)
@@ -193,14 +300,18 @@ int main(int argc, char** argv)
 	setupCmdLineReader();
 	// read agent id from command line parameters (--agent=mario)
 	std::string agent = readAgentFromCmdLine(argc, argv);
-	// read robot ip from command line parameters (--robot_ip=mario)
+	// read robot ip from command line parameters (--robot_ip=mario.local)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
+
 	ros::init(argc, argv, std::string("ActionDispatcher") + "_" + agent); // name used for bt.txt
 	ActionDispatcher server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
 	ros::Subscriber waypoint_sub =
 		n.subscribe<nao_basic::activity>(std::string("next_move") + "_" + agent,
 		                                 1, &ActionDispatcher::MessageReceivedCB, &server);
+	ros::Subscriber ball_pos_sub =
+		n.subscribe<geometry_msgs::Pose2D>(std::string("ball_pos") + "_" + agent,
+		                                   1, &ActionDispatcher::BallPosReceivedCB, &server);
 	confirmation_pub =
 		n.advertise<nao_basic::confirmation>(std::string("activity_done") + "_" + agent, 10);
 	ros::spin();

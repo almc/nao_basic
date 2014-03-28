@@ -162,9 +162,8 @@ target_link_libraries(CycleBT ${COMMON_LIB})
 add_executable(DispatcherBT src/bt/action_dispatcher_bt.cpp ${COMMON_SRC})
 target_link_libraries(DispatcherBT ${COMMON_LIB})
 
-# rosbuild_add_executable(BallDetector src/test/ball_detector.cpp)
-# target_link_libraries(BallDetector ${ALPROXIES_LIBRARIES} ${ALCOMMON_LIBRARIES} ${ALVISION_LIBRARIES} ${ALVALUE_LIBRARIES} ${OpenCV_LIBS})
-# target_link_libraries(BallDetector alproxies alcommon alvision alvalue ${OpenCV_LIBS})
+add_executable(BallDetectorTest src/test/ball_detector.cpp)
+target_link_libraries(BallDetectorTest ${COMMON_LIB})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
