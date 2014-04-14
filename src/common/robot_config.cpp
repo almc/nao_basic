@@ -1,4 +1,5 @@
 #include <nao_basic/robot_config.h>
+#include <iostream>
 
 po::options_description desc("Allowed options");
 
