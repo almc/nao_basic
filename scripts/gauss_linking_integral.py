@@ -27,8 +27,10 @@ points        = np.zeros([n_strands, n_max_points, 3]) # 3 coord (x,y,z)
 connect       = np.zeros([n_strands, n_max_points, n_max_points])
 
 # strand 0
-points[0,0,:] = [-2, 1, 0]
-points[0,1,:] = [ 2, 1, 0]
+# points[0,0,:] = [-2, 1, 0]
+# points[0,1,:] = [ 2, 1, 0]
+points[0,0,:] = [ 2, 1,-2]
+points[0,1,:] = [-2, 1, 2]
 # strand 1
 points[1,0,:] = [ 0, 2, 2]
 points[1,1,:] = [ 0, 0, 2]
@@ -78,12 +80,61 @@ print "writhe_matrix\n", writhe_matrix
 # print "writhe_matrix\n", a
 
 
-def update_writhe_matrix():
-    for s1 in range(n_strands):
-        for s2 in range(n_strands):
-            if s2 >= s1:
-                break
-            else:
+# def update_writhe_matrix():
+#     for s1 in range(n_strands):
+#         for s2 in range(n_strands):
+#             if s2 >= s1:
+#                 break
+#             else:
+
+
+def writhe_2():
+    s0 = 0
+    s1 = 1
+    for l0 in range(n_lines[s0]):
+        for l1 in range(n_lines[s1]):
+            idx_l0 = i_lines[s0,l0,:]
+            idx_l1 = i_lines[s1,l1,:]
+            a = points[s0,idx_l0[0],:]
+            b = points[s0,idx_l0[1],:]
+            c = points[s1,idx_l1[0],:]
+            d = points[s1,idx_l1[1],:]
+            print a,b,c,d
+            r_ab = b - a
+            r_ac = c - a
+            r_ad = d - a
+            r_bc = c - b
+            r_bd = d - b
+            r_cd = d - c
+            # print "r_ab\n", type(r_ab)
+
+            n_a  = np.cross(r_ac, r_ad)
+            n_an = np.linalg.norm(n_a)
+            if n_an != 0:
+                n_a = n_a / n_an
+
+            n_b = np.cross(r_ad, r_bd)
+            n_bn = np.linalg.norm(n_b)
+            if n_bn != 0:
+                n_b = n_b / n_bn
+
+            n_c = np.cross(r_bd, r_bc)
+            n_cn = np.linalg.norm(n_c)
+            if n_cn != 0:
+                n_c = n_c / n_cn
+
+            n_d = np.cross(r_bc, r_ac)
+            n_dn = np.linalg.norm(n_d)
+            if n_dn != 0:
+                n_d = n_d / n_dn
+
+
+            writhe_matrix[l1,l0] = np.arcsin(np.dot(n_a,n_b)) + np.arcsin(np.dot(n_b,n_c)) + \
+                                   np.arcsin(np.dot(n_c,n_d)) + np.arcsin(np.dot(n_d,n_a))
+
+
+writhe_2()
+print writhe_matrix
 
 
 
