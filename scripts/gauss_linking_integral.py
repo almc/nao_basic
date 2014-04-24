@@ -1,3 +1,4 @@
+# import pdb; pdb.set_trace()
 import sys
 import Image
 import numpy as np
@@ -43,13 +44,47 @@ connect[1,2,3] = connect[1,3,2] = 1
 print "points\n", points
 print "connect\n", connect
 
-writhe_matrix = 0.0
 # gauss linking integral
-for s in range(n_strands):      # the indices writhe[i,j]: j=s1, i=s2
-    writhe_matrix = [writhe_matrix for i in range(n_points[s])]
-writhe_matrix = np.asarray(writhe_matrix) # the indices are reverted
+n_lines = np.zeros(n_strands)
+print type(n_lines)
+for s in range(n_strands):
+    n_lines[s] = np.sum(connect[s,:,:])/2 # summing all matrix yields 2x
+n_lines = n_lines.astype(int)             # convert double to int
+
+n_max_lines = np.max(n_lines)
+i_lines = np.zeros((n_strands,n_max_lines,2)) # 2: initial/final coord
+for s in range(n_strands):
+    c = 0
+    for i in range(n_points[s]):
+        for j in range(n_points[s]):
+            if j >= i:
+                break
+            else:
+                if connect[s,i,j] == 1:
+                    i_lines[s,c,:] = [j,i] # i_lines has initial/final j/i
+                    c += 1
+
+print "n_lines\n", n_lines
+print "i_lines\n", i_lines
+
+writhe_matrix = 0.0
+for s in range(n_strands):      # the indices writhe[i,j]: j=s0, i=s1
+    # print n_lines[s]          # the indices are reverted
+    writhe_matrix = [writhe_matrix for i in range(n_lines[s])]
+writhe_matrix = np.asarray(writhe_matrix)
 print "writhe_matrix\n", writhe_matrix
+
+
 # print "writhe_matrix\n", a
+
+
+def update_writhe_matrix():
+    for s1 in range(n_strands):
+        for s2 in range(n_strands):
+            if s2 >= s1:
+                break
+            else:
+
 
 
 # def update_writhe_matrix():
