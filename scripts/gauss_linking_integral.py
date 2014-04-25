@@ -1,6 +1,5 @@
 # import pdb; pdb.set_trace()
-import sys
-import Image
+import sys, itertools, Image
 import numpy as np
 try:
     from OpenGL.GLUT import *
@@ -12,155 +11,160 @@ ERROR: PyOpenGL not installed properly. sudo apt-get install python-opengl
         '''
     sys.exit()
 
+################################################################################
+print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 window_width  = 1200
 window_height = 800
 window_center = np.array([float(window_width)/2, float(window_height)/2])
+# camera parameters (position, rotation)
+xpos = 1.0; ypos = 2.0; zpos = 5.0; xrot = 0.0; yrot = 0.0; zrot = 0.0
+texture  = 0; textureWall = 1
 
-xpos = 1.0; ypos = 1.0; zpos = 5.0; xrot = 0.0; yrot = 0.0; zrot = 0.0
-texture  = 0
-textureWall = 1
-
-n_points      = [2, 4]          # number of points for each strand
-n_max_points  = np.max(n_points)
-n_strands     = 2
-points        = np.zeros([n_strands, n_max_points, 3]) # 3 coord (x,y,z)
-connect       = np.zeros([n_strands, n_max_points, n_max_points])
-
-# strand 0
-# points[0,0,:] = [-2, 1, 0]
-# points[0,1,:] = [ 2, 1, 0]
-points[0,0,:] = [ 2, 1,-2]
-points[0,1,:] = [-2, 1, 2]
-# strand 1
+################################################################################
+#                                 2D data                                      #
+################################################################################
+n_points      = [2, 4]                        # number of points for each strand
+n_max_points  = np.max(n_points)               # maximum number of points fall s
+n_strands     = np.size(n_points)                            # number of strands
+strands       = range(n_strands)                        # enumeration of strands
+points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
+connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+################################################################################
+## points
+# s0
+points[0,0,:] = [-2, 1, 0]
+points[0,1,:] = [ 2, 1, 0]
+# s1
 points[1,0,:] = [ 0, 2, 2]
 points[1,1,:] = [ 0, 0, 2]
 points[1,2,:] = [ 0, 0,-2]
 points[1,3,:] = [ 0, 2,-2]
-# strand 0
+## connectivity
+# s0
 connect[0,0,1] = connect[0,1,0] = 1
-# strand 1
+# s1
 connect[1,0,1] = connect[1,1,0] = 1
 connect[1,1,2] = connect[1,2,1] = 1
 connect[1,2,3] = connect[1,3,2] = 1
+print "--> points\n", points
+print "--> connect\n", connect
+################################################################################
 
-print "points\n", points
-print "connect\n", connect
+# ################################################################################
+# #                                 3D data                                      #
+# ################################################################################
+# n_points      = [2, 4, 3]                     # number of points for each strand
+# n_max_points  = np.max(n_points)               # maximum number of points fall s
+# n_strands     = np.size(n_points)                            # number of strands
+# strands       = range(n_strands)                        # enumeration of strands
+# points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
+# connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+# ################################################################################
+# ## points
+# # s0
+# points[0,0,:] = [-2, 1, 0]
+# points[0,1,:] = [ 2, 1, 0]
+# # s1
+# points[1,0,:] = [ 0, 2, 2]
+# points[1,1,:] = [ 0, 0, 2]
+# points[1,2,:] = [ 0, 0,-2]
+# points[1,3,:] = [ 0, 2,-2]
+# # s3
+# points[2,0,:] = [-2, 1,-1]
+# points[2,1,:] = [ 2, 1,-1]
+# points[2,2,:] = [ 2, 1, 1]
+# ## connectivity
+# # s0
+# connect[0,0,1] = connect[0,1,0] = 1
+# # s1
+# connect[1,0,1] = connect[1,1,0] = 1
+# connect[1,1,2] = connect[1,2,1] = 1
+# connect[1,2,3] = connect[1,3,2] = 1
+# # s3
+# connect[2,0,1] = connect[2,1,0] = 1
+# connect[2,1,2] = connect[2,2,1] = 1
+# print "--> points\n", points
+# print "--> connect\n", connect
+# ################################################################################
 
+################################################################################
 # gauss linking integral
 n_lines = np.zeros(n_strands)
-print type(n_lines)
 for s in range(n_strands):
-    n_lines[s] = np.sum(connect[s,:,:])/2 # summing all matrix yields 2x
-n_lines = n_lines.astype(int)             # convert double to int
-
-n_max_lines = np.max(n_lines)
-i_lines = np.zeros((n_strands,n_max_lines,2)) # 2: initial/final coord
+    n_lines[s] = np.sum(connect[s,:,:])/2         # summing all matrix yields 2x
+n_lines = n_lines.astype(int)                            # convert double to int
+n_max_lines = np.max(n_lines)                          # used to cover all cases
+i_lines = np.zeros((n_strands, n_max_lines, 2))     # 2 initial/final coordinate
 for s in range(n_strands):
-    c = 0
+    c = 0                                    # counter to represent current line
     for i in range(n_points[s]):
         for j in range(n_points[s]):
-            if j >= i:
+            if j >= i:           # loop only through the lower triangular strict
                 break
             else:
                 if connect[s,i,j] == 1:
-                    i_lines[s,c,:] = [j,i] # i_lines has initial/final j/i
-                    c += 1
+                    i_lines[s,c,:] = [j,i]       # i_lines has initial/final j/i
+                    c += 1                      # counter moves to the next line
+print "--> n_lines\n", n_lines
+print "--> i_lines\n", i_lines
+################################################################################
+# writhe matrix
+# strand_combos_it = itertools.combinations(strands, 2) # combine strands 2 by 2
+strand_combos_it = itertools.combinations_with_replacement(strands, 2)
+strand_combos = []
+for it in strand_combos_it:
+    strand_combos.append(it)
+strand_combos = np.asarray(strand_combos)
+print "--> strand combinations\n", strand_combos
 
-print "n_lines\n", n_lines
-print "i_lines\n", i_lines
-
-writhe_matrix = 0.0
-for s in range(n_strands):      # the indices writhe[i,j]: j=s0, i=s1
-    # print n_lines[s]          # the indices are reverted
-    writhe_matrix = [writhe_matrix for i in range(n_lines[s])]
+writhe_matrix = []
+for sc in strand_combos:
+    writhe_matrix.append(np.zeros( [n_lines[sc[0]], n_lines[sc[1]]] ))
+    # print "--> scombo\n", sc, np.zeros( [n_lines[sc[0]], n_lines[sc[1]]] )
 writhe_matrix = np.asarray(writhe_matrix)
-print "writhe_matrix\n", writhe_matrix
+print "--> init writhe_matrix\n", writhe_matrix
+print "--> shape writhe_matrix\n", writhe_matrix.shape
 
+def writhe_n():
+    for s0 in range(n_strands):
+        for s1 in range(n_strands):
+            if s1 > s0:                       # avoiding duplicated calculations
+                break
+            else:
+                print "calculating writhe between strands:", s1, s0
+                print "lines per strand:", n_lines[s1], n_lines[s0]
+                writhe_2(s1, s0)
 
-# print "writhe_matrix\n", a
-
-
-# def update_writhe_matrix():
-#     for s1 in range(n_strands):
-#         for s2 in range(n_strands):
-#             if s2 >= s1:
-#                 break
-#             else:
-
-
-def writhe_2():
-    s0 = 0
-    s1 = 1
+def writhe_2(s0, s1):
+    assert(s0 <= s1)
+    # s0 = 1; s1 = 0
+    # idx_sc = np.argwhere(np.all((strand_combos-np.array([s0,s1]))==0,axis=-1))
+    idx_sc = np.argwhere((strand_combos == np.array([s0,s1])).all(-1))
+    print "index_strand_combo", idx_sc
     for l0 in range(n_lines[s0]):
         for l1 in range(n_lines[s1]):
-            idx_l0 = i_lines[s0,l0,:]
-            idx_l1 = i_lines[s1,l1,:]
-            a = points[s0,idx_l0[0],:]
-            b = points[s0,idx_l0[1],:]
-            c = points[s1,idx_l1[0],:]
-            d = points[s1,idx_l1[1],:]
-            print a,b,c,d
-            r_ab = b - a
-            r_ac = c - a
-            r_ad = d - a
-            r_bc = c - b
-            r_bd = d - b
-            r_cd = d - c
-            # print "r_ab\n", type(r_ab)
-
-            n_a  = np.cross(r_ac, r_ad)
-            n_an = np.linalg.norm(n_a)
-            if n_an != 0:
-                n_a = n_a / n_an
-
-            n_b = np.cross(r_ad, r_bd)
-            n_bn = np.linalg.norm(n_b)
-            if n_bn != 0:
-                n_b = n_b / n_bn
-
-            n_c = np.cross(r_bd, r_bc)
-            n_cn = np.linalg.norm(n_c)
-            if n_cn != 0:
-                n_c = n_c / n_cn
-
-            n_d = np.cross(r_bc, r_ac)
-            n_dn = np.linalg.norm(n_d)
-            if n_dn != 0:
-                n_d = n_d / n_dn
-
-
-            writhe_matrix[l1,l0] = np.arcsin(np.dot(n_a,n_b)) + np.arcsin(np.dot(n_b,n_c)) + \
-                                   np.arcsin(np.dot(n_c,n_d)) + np.arcsin(np.dot(n_d,n_a))
-
-
-writhe_2()
-print writhe_matrix
+            idx_l0 = i_lines[s0,l0,:]; idx_l1 = i_lines[s1,l1,:]
+            a = points[s0,idx_l0[0],:]; b = points[s0,idx_l0[1],:]
+            c = points[s1,idx_l1[0],:]; d = points[s1,idx_l1[1],:]
+            r_ab = b - a; r_ac = c - a; r_ad = d - a;
+            r_bc = c - b; r_bd = d - b; r_cd = d - c
+            n_a  = np.cross(r_ac, r_ad); n_an = np.linalg.norm(n_a)
+            if n_an != 0: n_a = n_a / n_an
+            n_b  = np.cross(r_ad, r_bd); n_bn = np.linalg.norm(n_b)
+            if n_bn != 0: n_b = n_b / n_bn
+            n_c  = np.cross(r_bd, r_bc); n_cn = np.linalg.norm(n_c)
+            if n_cn != 0: n_c = n_c / n_cn
+            n_d  = np.cross(r_bc, r_ac); n_dn = np.linalg.norm(n_d)
+            if n_dn != 0: n_d = n_d / n_dn
+            writhe_matrix.item(idx_sc)[l0,l1] = np.arcsin(np.dot(n_a,n_b)) + \
+                                                np.arcsin(np.dot(n_b,n_c)) + \
+                                                np.arcsin(np.dot(n_c,n_d)) + \
+                                                np.arcsin(np.dot(n_d,n_a))
 
 
 
-# def update_writhe_matrix():
-#     for s in range(n_strands):
-#         for i in range(n_points[s]):
-#             for j in range(n_points[s]):
-#                 if j >= i:
-#                     break
-#                 else:
-#                     # print i,j
-#                     if connect[s,i,j] == 1:
-#                         calculate_writhe(points[s,i,:], points[s,j,:], s)
-#                         # print "yes", i,j
-#                         glVertex3f(points[s,i,0],points[s,i,1],points[s,i,2])
-#                         glVertex3f(points[s,j,0],points[s,j,1],points[s,j,2])
-#                     else:
-#                         pass
-#                         # print "no ", i,j, connect[s,i,j]
-#                         glLineWidth(1.0)
-
-
-
-    # writhe_matrix[i,j] =
-
-
+writhe_n()
+print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
 
 def initGL(width, height):
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -244,6 +248,7 @@ def display():
     draw_coordinate()
     draw_strands(0, (1.0, 1.0, 1.0))
     draw_strands(1, (1.0, 1.0, 0.0))
+    # draw_strands(2, (0.0, 1.0, 1.0))
 
     glBindTexture(GL_TEXTURE_2D, texture)
 
