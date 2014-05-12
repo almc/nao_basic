@@ -11,6 +11,46 @@ ERROR: PyOpenGL not installed properly. sudo apt-get install python-opengl
         '''
     sys.exit()
 
+import roslib
+roslib.load_manifest('nao_basic')
+import rospy
+import math
+import tf
+import geometry_msgs.msg
+
+rospy.init_node('nao_pose')
+listener = tf.TransformListener()
+
+def get_nao_pose():
+    try:
+        (trans_torso    , rot_torso    ) = listener.lookupTransform('/base_link', '/torso'              , rospy.Time(0)) # 0
+        (trans_neck     , rot_neck     ) = listener.lookupTransform('/base_link', '/HeadYaw_link'       , rospy.Time(0)) # 1
+        (trans_head     , rot_head     ) = listener.lookupTransform('/base_link', '/CameraTop_frame'    , rospy.Time(0)) # 2
+        (trans_Lshoulder, rot_Lshoulder) = listener.lookupTransform('/base_link', '/LShoulderPitch_link', rospy.Time(0)) # 3
+        (trans_Rshoulder, rot_Rshoulder) = listener.lookupTransform('/base_link', '/RShoulderPitch_link', rospy.Time(0)) # 4
+        (trans_LElbow   , rot_LElbow   ) = listener.lookupTransform('/base_link', '/LElbowYaw_link'     , rospy.Time(0)) # 5
+        (trans_RElbow   , rot_RElbow   ) = listener.lookupTransform('/base_link', '/RElbowYaw_link'     , rospy.Time(0)) # 6
+        (trans_Lwrist   , rot_Lwrist   ) = listener.lookupTransform('/base_link', '/LWristYaw_link'     , rospy.Time(0)) # 7
+        (trans_Rwrist   , rot_Rwrist   ) = listener.lookupTransform('/base_link', '/RWristYaw_link'     , rospy.Time(0)) # 8
+        (trans_Lgrip    , rot_Lgrip    ) = listener.lookupTransform('/base_link', '/l_gripper'          , rospy.Time(0)) # 9
+        (trans_Rgrip    , rot_Rgrip    ) = listener.lookupTransform('/base_link', '/r_gripper'          , rospy.Time(0)) # 10
+        (trans_Lhip     , rot_Lhip     ) = listener.lookupTransform('/base_link', '/LHipYawPitch_link'  , rospy.Time(0)) # 11
+        (trans_Rhip     , rot_Rhip     ) = listener.lookupTransform('/base_link', '/RHipYawPitch_link'  , rospy.Time(0)) # 12
+        (trans_Lknee    , rot_Lknee    ) = listener.lookupTransform('/base_link', '/LKneePitch_link'    , rospy.Time(0)) # 13
+        (trans_Rknee    , rot_Rknee    ) = listener.lookupTransform('/base_link', '/RKneePitch_link'    , rospy.Time(0)) # 14
+        (trans_Lankle   , rot_Lankle   ) = listener.lookupTransform('/base_link', '/LAnklePitch_link'   , rospy.Time(0)) # 15
+        (trans_Rankle   , rot_Rankle   ) = listener.lookupTransform('/base_link', '/RAnklePitch_link'   , rospy.Time(0)) # 16
+        (trans_Lsole    , rot_Lsole    ) = listener.lookupTransform('/base_link', '/l_sole'             , rospy.Time(0)) # 17
+        (trans_Rsole    , rot_Rsole    ) = listener.lookupTransform('/base_link', '/r_sole'             , rospy.Time(0)) # 18
+        # return [list(trans_torso), list(trans_neck)]
+        return [list(trans_torso), list(trans_neck), list(trans_head), list(trans_Lshoulder), list(trans_Rshoulder),
+                list(trans_LElbow), list(trans_RElbow), list(trans_Lwrist), list(trans_Rwrist), list(trans_Lgrip), list(trans_Rgrip),
+                list(trans_Lhip), list(trans_Rhip), list(trans_Lknee), list(trans_Rknee), list(trans_Lankle), list(trans_Rankle),
+                list(trans_Lsole), list(trans_Rsole)]
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print "exception"
+        return None
+
 ################################################################################
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 window_width  = 1200
@@ -21,19 +61,26 @@ xpos = 1.0; ypos = 2.0; zpos = 5.0; xrot = 0.0; yrot = 0.0; zrot = 0.0
 texture  = 0; textureWall = 1
 
 ################################################################################
-#                                 2D data                                      #
+#                                NAO data                                      #
 ################################################################################
-n_points      = [2, 4]                        # number of points for each strand
+n_points      = [19, 4]                       # number of points for each strand
 n_max_points  = np.max(n_points)               # maximum number of points fall s
 n_strands     = np.size(n_points)                            # number of strands
 strands       = range(n_strands)                        # enumeration of strands
 points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
 connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+scale         = 25
 ################################################################################
 ## points
 # s0
-points[0,0,:] = [-2, 1, 0]
-points[0,1,:] = [ 2, 1, 0]
+# points[0,0,:] = [-2, 1, 0]
+# points[0,1,:] = [ 2, 1, 0]
+
+pose = get_nao_pose()
+while pose == None:
+    pose = get_nao_pose()
+points[0,:,:] = scale * np.array(pose)
+
 # s1
 points[1,0,:] = [ 0, 2, 2]
 points[1,1,:] = [ 0, 0, 2]
@@ -41,7 +88,27 @@ points[1,2,:] = [ 0, 0,-2]
 points[1,3,:] = [ 0, 2,-2]
 ## connectivity
 # s0
-connect[0,0,1] = connect[0,1,0] = 1
+connect[0,0,1]   = connect[0,1,0]   = 1
+connect[0,1,2]   = connect[0,2,1]   = 1
+connect[0,1,3]   = connect[0,3,1]   = 1
+connect[0,1,4]   = connect[0,4,1]   = 1
+connect[0,3,5]   = connect[0,5,3]   = 1
+connect[0,5,7]   = connect[0,7,5]   = 1
+connect[0,7,9]   = connect[0,9,7]   = 1
+connect[0,4,6]   = connect[0,6,4]   = 1
+connect[0,6,8]   = connect[0,8,6]   = 1
+connect[0,8,10]  = connect[0,10,8]  = 1
+connect[0,0,11]  = connect[0,11,0]  = 1
+connect[0,0,12]  = connect[0,12,0]  = 1
+connect[0,11,13] = connect[0,13,11] = 1
+connect[0,13,15] = connect[0,15,13] = 1
+connect[0,15,17] = connect[0,17,15] = 1
+connect[0,12,14] = connect[0,14,12] = 1
+connect[0,14,16] = connect[0,16,14] = 1
+connect[0,16,18] = connect[0,18,16] = 1
+
+
+# connect[0,:,:] = connect[0,:,:] = 1
 # s1
 connect[1,0,1] = connect[1,1,0] = 1
 connect[1,1,2] = connect[1,2,1] = 1
@@ -49,6 +116,36 @@ connect[1,2,3] = connect[1,3,2] = 1
 print "--> points\n", points
 print "--> connect\n", connect
 ################################################################################
+
+# ################################################################################
+# #                                 2D data                                      #
+# ################################################################################
+# n_points      = [2, 4]                        # number of points for each strand
+# n_max_points  = np.max(n_points)               # maximum number of points fall s
+# n_strands     = np.size(n_points)                            # number of strands
+# strands       = range(n_strands)                        # enumeration of strands
+# points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
+# connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+# ################################################################################
+# ## points
+# # s0
+# points[0,0,:] = [-2, 1, 0]
+# points[0,1,:] = [ 2, 1, 0]
+# # s1
+# points[1,0,:] = [ 0, 2, 2]
+# points[1,1,:] = [ 0, 0, 2]
+# points[1,2,:] = [ 0, 0,-2]
+# points[1,3,:] = [ 0, 2,-2]
+# ## connectivity
+# # s0
+# connect[0,0,1] = connect[0,1,0] = 1
+# # s1
+# connect[1,0,1] = connect[1,1,0] = 1
+# connect[1,1,2] = connect[1,2,1] = 1
+# connect[1,2,3] = connect[1,3,2] = 1
+# print "--> points\n", points
+# print "--> connect\n", connect
+# ################################################################################
 
 # ################################################################################
 # #                                 3D data                                      #
