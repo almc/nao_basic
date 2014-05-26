@@ -171,7 +171,6 @@ int main(int argc, char** argv)
 	std::string agent = readAgentFromCmdLine(argc, argv);
 	ros::init(argc, argv, std::string("GoToWaypoint") + "_" + agent); // name used for bt.txt
 	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
-	setupCmdLineReader();
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
 	GoToWaypoint server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;

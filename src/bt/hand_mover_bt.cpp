@@ -129,15 +129,18 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "HandMover"); // name used for bt.txt
-	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
+	// specify which options are available as cmd line arguments
 	setupCmdLineReader();
+	// read agent id from command line parameters (--agent=mario)
+	std::string agent = readAgentFromCmdLine(argc, argv);
+	// read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
+	ros::init(argc, argv, std::string("HandMover") + "_" + agent); // name used for bt.txt
 	HandMover server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
-	ros::Subscriber ball_pos_sub = n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1,
-	                                                                  &HandMover::BallPosReceived,
-	                                                                  &server);
+	ros::Subscriber ball_pos_sub =
+		n.subscribe<geometry_msgs::Pose2D>(std::string("ball_pos") + "_" + agent, 1,
+		                                   &HandMover::BallPosReceived, &server);
 	ros::spin();
 	return 0;
 }
