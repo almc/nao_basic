@@ -331,6 +331,10 @@ def draw_strands(s, color):
     glLineWidth(1.0)
 
 
+def draw_robot():
+    pose = get_nao_pose()
+    points[0,:,:] = scale * np.array(pose)
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -346,6 +350,7 @@ def display():
     draw_strands(0, (1.0, 1.0, 1.0))
     draw_strands(1, (1.0, 1.0, 0.0))
     # draw_strands(2, (0.0, 1.0, 1.0))
+    draw_robot()
 
     glBindTexture(GL_TEXTURE_2D, texture)
 

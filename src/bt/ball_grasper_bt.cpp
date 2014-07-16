@@ -137,16 +137,21 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "BallGrasper"); // name used for bt.txt
-	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
+	// specify which options are available as cmd line arguments
 	setupCmdLineReader();
+	// read agent id from command line parameters (--agent=mario)
+	std::string agent = readAgentFromCmdLine(argc, argv);
+	// read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
+	ros::init(argc, argv, std::string("BallGrasper") + "_" + agent); // name used for bt.txt
 	BallGrasper server(ros::this_node::getName(), robot_ip);
 	ros::NodeHandle n;
 	ros::Subscriber ball_pos_sub =
-		n.subscribe<geometry_msgs::Pose2D>("ball_pos", 1, &BallGrasper::BallPosReceived, &server);
+		n.subscribe<geometry_msgs::Pose2D>(std::string("ball_pos") + "_" + agent, 1,
+		                                   &BallGrasper::BallPosReceived, &server);
 	ros::Subscriber ball_size_sub =
-		n.subscribe<std_msgs::Int8>("ball_size", 1, &BallGrasper::BallSizeReceived, &server);
+		n.subscribe<std_msgs::Int8>(std::string("ball_size") + "_" + agent, 1,
+		                            &BallGrasper::BallSizeReceived, &server);
 	ros::spin();
 	return 0;
 }

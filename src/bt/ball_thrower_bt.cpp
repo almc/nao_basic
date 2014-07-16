@@ -96,12 +96,15 @@ public:
 int main(int argc, char** argv)
 {
 	std::cout << "Hello, world!" << std::endl;
-	ros::init(argc, argv, "BallThrower"); // name used for bt.txt
-	//Read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
+	// specify which options are available as cmd line arguments
 	setupCmdLineReader();
+	// read agent id from command line parameters (--agent=mario)
+	std::string agent = readAgentFromCmdLine(argc, argv);
+	// read robot ip from command line parameters (--robot_ip=192.168.0.100 for example)
 	std::string robot_ip = readRobotIPFromCmdLine(argc, argv);
+	ros::init(argc, argv, std::string("BallThrower") + "_" + agent); // name used for bt.txt
 	BallThrower server(ros::this_node::getName(), robot_ip);
-	//ros::NodeHandle n;
+	ros::NodeHandle n;
 	ros::spin();
 	return 0;
 }
