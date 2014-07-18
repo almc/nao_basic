@@ -1,3 +1,9 @@
+# ~/naoqi/naoqi-sdk-1.14.5-linux64/naoqi --verbose --broker-ip 127.0.0.1
+# roslaunch nao_driver nao_driver_sim.launch
+# roslaunch nao_description nao_state_publisher.launch
+# NAO_IP=192.168.0.195 roslaunch nao_driver nao_driver_sim.launch
+# NAO_IP=192.168.0.195 roslaunch nao_description nao_state_publisher.launch
+# ./ShortLoop /tmp/cluster_0.off
 # import pdb; pdb.set_trace()
 import sys, itertools, Image
 import numpy as np
@@ -60,63 +66,65 @@ window_center = np.array([float(window_width)/2, float(window_height)/2])
 xpos = 1.0; ypos = 2.0; zpos = 5.0; xrot = 0.0; yrot = 0.0; zrot = 0.0
 texture  = 0; textureWall = 1
 
-# ################################################################################
-# #                                NAO data                                      #
-# ################################################################################
-# n_points      = [19, 4]                       # number of points for each strand
-# n_max_points  = np.max(n_points)               # maximum number of points fall s
-# n_strands     = np.size(n_points)                            # number of strands
-# strands       = range(n_strands)                        # enumeration of strands
-# points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
-# connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
-# scale         = 25
-# ################################################################################
-# ## points
-# # s0
-# # points[0,0,:] = [-2, 1, 0]
-# # points[0,1,:] = [ 2, 1, 0]
+################################################################################
+#                                NAO data                                      #
+################################################################################
+n_points      = [19, 4]                       # number of points for each strand
+n_max_points  = np.max(n_points)               # maximum number of points fall s
+n_strands     = np.size(n_points)                            # number of strands
+strands       = range(n_strands)                        # enumeration of strands
+points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
+connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+scale         = 25
+################################################################################
+## points
+# s0
+# points[0,0,:] = [-2, 1, 0]
+# points[0,1,:] = [ 2, 1, 0]
 
-# # snao
-# pose = get_nao_pose()
-# while pose == None:
-#     pose = get_nao_pose()
-# points[0,:,:] = scale * np.array(pose)
+# snao
+pose = get_nao_pose()
+while pose == None:
+    pose = get_nao_pose()
+points[0,:,:] = scale * np.array(pose)
 
-# # s1
-# points[1,0,:] = [ 0, 2, 2]
-# points[1,1,:] = [ 0, 0, 2]
-# points[1,2,:] = [ 0, 0,-2]
-# points[1,3,:] = [ 0, 2,-2]
-# ## connectivity
-# # s0
-# connect[0,0,1]   = connect[0,1,0]   = 1
-# connect[0,1,2]   = connect[0,2,1]   = 1
-# connect[0,1,3]   = connect[0,3,1]   = 1
-# connect[0,1,4]   = connect[0,4,1]   = 1
-# connect[0,3,5]   = connect[0,5,3]   = 1
-# connect[0,5,7]   = connect[0,7,5]   = 1
-# connect[0,7,9]   = connect[0,9,7]   = 1
-# connect[0,4,6]   = connect[0,6,4]   = 1
-# connect[0,6,8]   = connect[0,8,6]   = 1
-# connect[0,8,10]  = connect[0,10,8]  = 1
-# connect[0,0,11]  = connect[0,11,0]  = 1
-# connect[0,0,12]  = connect[0,12,0]  = 1
-# connect[0,11,13] = connect[0,13,11] = 1
-# connect[0,13,15] = connect[0,15,13] = 1
-# connect[0,15,17] = connect[0,17,15] = 1
-# connect[0,12,14] = connect[0,14,12] = 1
-# connect[0,14,16] = connect[0,16,14] = 1
-# connect[0,16,18] = connect[0,18,16] = 1
+# s1
+zdist = 3
+ydist = 2
+points[1,0,:] = [ zdist, 4+ydist, 4]
+points[1,1,:] = [ zdist, 0+ydist, 4]
+points[1,2,:] = [ zdist, 0+ydist,-4]
+points[1,3,:] = [ zdist, 4+ydist,-4]
+## connectivity
+# s0
+connect[0,0,1]   = connect[0,1,0]   = 1
+connect[0,1,2]   = connect[0,2,1]   = 1
+connect[0,1,3]   = connect[0,3,1]   = 1
+connect[0,1,4]   = connect[0,4,1]   = 1
+connect[0,3,5]   = connect[0,5,3]   = 1
+connect[0,5,7]   = connect[0,7,5]   = 1
+connect[0,7,9]   = connect[0,9,7]   = 1
+connect[0,4,6]   = connect[0,6,4]   = 1
+connect[0,6,8]   = connect[0,8,6]   = 1
+connect[0,8,10]  = connect[0,10,8]  = 1
+connect[0,0,11]  = connect[0,11,0]  = 1
+connect[0,0,12]  = connect[0,12,0]  = 1
+connect[0,11,13] = connect[0,13,11] = 1
+connect[0,13,15] = connect[0,15,13] = 1
+connect[0,15,17] = connect[0,17,15] = 1
+connect[0,12,14] = connect[0,14,12] = 1
+connect[0,14,16] = connect[0,16,14] = 1
+connect[0,16,18] = connect[0,18,16] = 1
+# connect[0,:,:] = connect[0,:,:] = 1
 
-
-# # connect[0,:,:] = connect[0,:,:] = 1
-# # s1
-# connect[1,0,1] = connect[1,1,0] = 1
-# connect[1,1,2] = connect[1,2,1] = 1
-# connect[1,2,3] = connect[1,3,2] = 1
-# print "--> points\n", points
-# print "--> connect\n", connect
-# ################################################################################
+# s1
+connect[1,0,1] = connect[1,1,0] = 1
+connect[1,1,2] = connect[1,2,1] = 1
+connect[1,2,3] = connect[1,3,2] = 1
+connect[1,3,0] = connect[1,0,3] = 1
+print "--> points\n", points
+print "--> connect\n", connect
+################################################################################
 
 # ################################################################################
 # #                                 2D data                                      #
@@ -148,52 +156,53 @@ texture  = 0; textureWall = 1
 # print "--> connect\n", connect
 # ################################################################################
 
-################################################################################
-#                                 3D data                                      #
-################################################################################
-n_points      = [4, 4]                     # number of points for each strand
-n_max_points  = np.max(n_points)               # maximum number of points fall s
-n_strands     = np.size(n_points)                            # number of strands
-strands       = range(n_strands)                        # enumeration of strands
-points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
-connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
-################################################################################
-## points
-# s0
-points[0,0,:] = [ 2, 0, 3+1.5]
-points[0,1,:] = [ 2, 0, 0+1.5]
-points[0,2,:] = [-2, 0, 0+1.5]
-points[0,3,:] = [-2, 0, 3+1.5]
-# s1
-points[1,0,:] = [ 0, 2, 2]
-points[1,1,:] = [ 0,-2, 2]
-points[1,2,:] = [ 0,-2,-1]
-points[1,3,:] = [ 0, 2,-1]
-# s3
-# points[2,0,:] = [ 0, 2,-2]
-# points[2,1,:] = [ 0,-2,-2]
-# points[2,2,:] = [ 0,-2, 1]
-# points[2,3,:] = [ 0, 2, 1]
-## connectivity
-# s0
-connect[0,0,1] = connect[0,1,0] = 1
-connect[0,1,2] = connect[0,2,1] = 1
-connect[0,2,3] = connect[0,3,2] = 1
-connect[0,3,0] = connect[0,0,3] = 1
+# ################################################################################
+# #                                 3D data                                      #
+# ################################################################################
+# n_points      = [4, 4]                     # number of points for each strand
+# n_max_points  = np.max(n_points)               # maximum number of points fall s
+# n_strands     = np.size(n_points)                            # number of strands
+# strands       = range(n_strands)                        # enumeration of strands
+# points        = np.zeros([n_strands, n_max_points, 3])         # 3 coord (x,y,z)
+# connect       = np.zeros([n_strands, n_max_points, n_max_points])  # adjancecy m
+# ################################################################################
+# ## points
+# # s0
+# distance = 1.5
+# points[0,0,:] = [ 2, 0, 3+distance]
+# points[0,1,:] = [ 2, 0, 0+distance]
+# points[0,2,:] = [-2, 0, 0+distance]
+# points[0,3,:] = [-2, 0, 3+distance]
 # # s1
-connect[1,0,1] = connect[1,1,0] = 1
-connect[1,1,2] = connect[1,2,1] = 1
-connect[1,2,3] = connect[1,3,2] = 1
-connect[1,3,0] = connect[1,0,3] = 1
-# s3
-# connect[2,0,1] = connect[2,1,0] = 1
-# connect[2,1,2] = connect[2,2,1] = 1
-# connect[2,2,3] = connect[2,3,2] = 1
-# connect[2,3,0] = connect[2,0,3] = 1
+# points[1,0,:] = [ 0, 2, 2]
+# points[1,1,:] = [ 0,-2, 2]
+# points[1,2,:] = [ 0,-2,-1]
+# points[1,3,:] = [ 0, 2,-1]
+# # s3
+# # points[2,0,:] = [ 0, 2,-2]
+# # points[2,1,:] = [ 0,-2,-2]
+# # points[2,2,:] = [ 0,-2, 1]
+# # points[2,3,:] = [ 0, 2, 1]
+# ## connectivity
+# # s0
+# connect[0,0,1] = connect[0,1,0] = 1
+# connect[0,1,2] = connect[0,2,1] = 1
+# connect[0,2,3] = connect[0,3,2] = 1
+# connect[0,3,0] = connect[0,0,3] = 1
+# # # s1
+# connect[1,0,1] = connect[1,1,0] = 1
+# connect[1,1,2] = connect[1,2,1] = 1
+# connect[1,2,3] = connect[1,3,2] = 1
+# connect[1,3,0] = connect[1,0,3] = 1
+# # s3
+# # connect[2,0,1] = connect[2,1,0] = 1
+# # connect[2,1,2] = connect[2,2,1] = 1
+# # connect[2,2,3] = connect[2,3,2] = 1
+# # connect[2,3,0] = connect[2,0,3] = 1
 
-print "--> points\n", points
-print "--> connect\n", connect
-################################################################################
+# print "--> points\n", points
+# print "--> connect\n", connect
+# ################################################################################
 
 ################################################################################
 # gauss linking integral
@@ -243,7 +252,6 @@ def writhe_n():
                 print "lines per strand:", n_lines[s1], n_lines[s0]
                 writhe_2(s1, s0)
 
-
 def writhe_2(s0, s1):
     assert(s0 <= s1)
     # s0 = 1; s1 = 0
@@ -289,23 +297,50 @@ def writhe_2(s0, s1):
             if number_da <= -1.0:
                 number_da = -1.0
 
-            writhe_matrix[idx_sc,l0,l1] = np.arcsin(number_ab) + \
-                                          np.arcsin(number_bc) + \
-                                          np.arcsin(number_cd) + \
-                                          np.arcsin(number_da)
+            # print type(writhe_matrix)
+            # print writhe_matrix.shape
+            # print "*+********************",writhe_matrix.item(idx_sc)[l0,l1]
+            writhe_matrix.item(idx_sc)[l0,l1] = np.arcsin(number_ab) + \
+                                                np.arcsin(number_bc) + \
+                                                np.arcsin(number_cd) + \
+                                                np.arcsin(number_da)
 
+            # writhe_matrix[idx_sc,l0,l1] = writhe_matrix[idx_sc,l0,l1] % (4 * np.pi)
+            # writhe_matrix[idx_sc,l0,l1] = (writhe_matrix[idx_sc,l0,l1] + np.pi) % (2 * np.pi) - np.pi
             # writhe_matrix[idx_sc,l0,l1] = np.arcsin(np.dot(n_a,n_b)) + \
             #                               np.arcsin(np.dot(n_b,n_c)) + \
             #                               np.arcsin(np.dot(n_c,n_d)) + \
             #                               np.arcsin(np.dot(n_d,n_a))
-            writhe_matrix[idx_sc,l0,l1] = writhe_matrix[idx_sc,l0,l1] * np.sign(np.dot(np.cross(r_cd,r_ab), r_ac)) / (4*np.pi)
-    print "--->>>GLI at", idx_sc, "between", s0, s1, "is\n", writhe_matrix[idx_sc].sum()
+            # writhe_matrix[idx_sc,l0,l1] = writhe_matrix[idx_sc,l0,l1] * np.sign(np.dot(np.cross(r_cd,r_ab), r_ac)) / (4*np.pi)
+            writhe_matrix.item(idx_sc)[l0,l1] = writhe_matrix.item(idx_sc)[l0,l1] * \
+                                                np.sign(np.dot(np.cross(r_cd,r_ab), r_ac)) / (4*np.pi)
+    print "--->>>GLI at", idx_sc, "between", s0, s1, "is\n", sum(sum(writhe_matrix[idx_sc].sum()))
+    # print "--->>>GLI at", idx_sc, "between", s0, s1, "is\n", writhe_matrix[idx_sc].sum()
+    # print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
 
-
+# def writhe_2(s0, s1):
+#     assert(s0 <= s1)
+#     # s0 = 1; s1 = 0
+#     # idx_sc = np.argwhere(np.all((strand_combos-np.array([s0,s1]))==0,axis=-1))
+#     idx_sc = np.argwhere((strand_combos == np.array([s0,s1])).all(-1))
+#     print "index_strand_combo", idx_sc
+#     for l0 in range(n_lines[s0]):
+#         for l1 in range(n_lines[s1]):
+#             idx_l0 = i_lines[s0,l0,:]; idx_l1 = i_lines[s1,l1,:]
+#             a = points[s0,idx_l0[0],:]; b = points[s0,idx_l0[1],:]
+#             c = points[s1,idx_l1[0],:]; d = points[s1,idx_l1[1],:]
+#             r_ab = b - a; r_ac = c - a; r_ad = d - a;
+#             r_bc = c - b; r_bd = d - b; r_cd = d - c;
+#             s1  = r_ab;
+#             s2  = r_cd;
+#             s1n = np.linalg.norm(s1)
+#             s2n = np.linalg.norm(s2)
+#             e1  = s1 / s1n
+#             e2  = s2 / s2n
 
 
 writhe_n()
-print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
+# print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
 # print "--> GLI =", sum(sum(writhe_matrix))
 
 def initGL(width, height):
@@ -454,6 +489,7 @@ def keyboard(key, x, y):
     # global eye
     # diff = center - eye
     navigation_speed = 0.1
+    global distance
 
     if key == chr(27):
         sys.exit(0)
@@ -482,12 +518,26 @@ def keyboard(key, x, y):
         xpos += move_speed * float(np.sin(yrotrad)) * -1.0 * pitchFactor
         ypos += move_speed * float(np.sin(xrotrad)) *  1.0
         zpos += move_speed * float(np.cos(yrotrad)) *  1.0 * yawFactor;
+    elif key == 'c':
+        writhe_2(0, 1)
 
-def loadTexture ( fileName, texture ):
+    # elif key == 'm':
+    #     distance += 0.05
+    #     writhe_n()
+    # elif key == 'n':
+    #     distance -= 0.05
+    #     writhe_n()
+    # points[0,0,:] = [ 2, 0, 3+distance]
+    # points[0,1,:] = [ 2, 0, 0+distance]
+    # points[0,2,:] = [-2, 0, 0+distance]
+    # points[0,3,:] = [-2, 0, 3+distance]
+
+
+def loadTexture(fileName, texture):
     image  = Image.open(fileName)
     width  = image.size[0]
     height = image.size[1]
-    image  = image.tostring ( "raw", "RGBX", 0, -1 )
+    image  = image.tostring("raw", "RGBX", 0, -1)
 
     #    texture = glGenTextures ( 1 )
     glBindTexture     ( GL_TEXTURE_2D, texture )
@@ -504,7 +554,7 @@ def main():
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
     glutInitWindowSize(window_width, window_height);
-    glutInitWindowPosition(200,200)
+    glutInitWindowPosition(0,0)
     glutCreateWindow("Gauss Linking Integral")
     loadTexture("tex.jpg", texture)
     loadTexture("wall.jpg", textureWall)
