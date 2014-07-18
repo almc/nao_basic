@@ -1,5 +1,6 @@
 #include <nao_basic/motions_common.h>
 #include <nao_basic/ball_tracker_common.h>
+#include <alproxies/almotionproxy.h>
 
 #define ALVA AL::ALValue::array
 
@@ -1108,7 +1109,7 @@ bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr)
 }
 
 
-void Kickold(AL::ALMotionProxy* motion_proxy_ptr)
+void Kickold(AL::ALMotionProxy* motion_proxy_ptr, bool hand)
 {
 // Choregraphe simplified export in c++.
 // Add #include <alproxies/almotionproxy.h> at the beginning of this file.
@@ -1558,83 +1559,82 @@ catch(const std::exception&)
 
 }
 
-
 void Throw(AL::ALMotionProxy* motion_proxy_ptr)
 {
 // Choregraphe simplified export in c++.
 // Add #include <alproxies/almotionproxy.h> at the beginning of this file.
-std::vector<std::string> names;
-AL::ALValue times, keys;
-names.reserve(14);
-times.arraySetSize(14);
-keys.arraySetSize(14);
+	std::vector<std::string> names;
+	AL::ALValue times, keys;
+	names.reserve(14);
+	times.arraySetSize(14);
+	keys.arraySetSize(14);
 
-names.push_back("HeadPitch");
-times[0].arraySetSize(5);
-keys[0].arraySetSize(5);
+	names.push_back("HeadPitch");
+	times[0].arraySetSize(5);
+	keys[0].arraySetSize(5);
 
-times[0][0] = 0.800000;
-keys[0][0] = -0.221657;
-times[0][1] = 1.16000;
-keys[0][1] = 0.107338;
-times[0][2] = 1.96000;
-keys[0][2] = 0.222388;
-times[0][3] = 2.76000;
-keys[0][3] = -0.179519;
-times[0][4] = 3.44000;
-keys[0][4] = 0.191986;
+	times[0][0] = 0.800000;
+	keys[0][0] = -0.221657;
+	times[0][1] = 1.16000;
+	keys[0][1] = 0.107338;
+	times[0][2] = 1.96000;
+	keys[0][2] = 0.222388;
+	times[0][3] = 2.76000;
+	keys[0][3] = -0.179519;
+	times[0][4] = 3.44000;
+	keys[0][4] = 0.191986;
 
-names.push_back("HeadYaw");
-times[1].arraySetSize(3);
-keys[1].arraySetSize(3);
+	names.push_back("HeadYaw");
+	times[1].arraySetSize(3);
+	keys[1].arraySetSize(3);
 
-times[1][0] = 1.16000;
-keys[1][0] = 0.124212;
-times[1][1] = 1.96000;
-keys[1][1] = 0.128814;
-times[1][2] = 2.76000;
-keys[1][2] = 0.00916204;
+	times[1][0] = 1.16000;
+	keys[1][0] = 0.124212;
+	times[1][1] = 1.96000;
+	keys[1][1] = 0.128814;
+	times[1][2] = 2.76000;
+	keys[1][2] = 0.00916204;
 
-names.push_back("LElbowRoll");
-times[2].arraySetSize(5);
-keys[2].arraySetSize(5);
+	names.push_back("LElbowRoll");
+	times[2].arraySetSize(5);
+	keys[2].arraySetSize(5);
 
-times[2][0] = 0.760000;
-keys[2][0] = -0.308923;
-times[2][1] = 1.12000;
-keys[2][1] = -1.10290;
-times[2][2] = 1.92000;
-keys[2][2] = -1.54462;
-times[2][3] = 2.72000;
-keys[2][3] = -1.54462;
-times[2][4] = 3.40000;
-keys[2][4] = -1.54462;
+	times[2][0] = 0.760000;
+	keys[2][0] = -0.308923;
+	times[2][1] = 1.12000;
+	keys[2][1] = -1.10290;
+	times[2][2] = 1.92000;
+	keys[2][2] = -1.54462;
+	times[2][3] = 2.72000;
+	keys[2][3] = -1.54462;
+	times[2][4] = 3.40000;
+	keys[2][4] = -1.54462;
 
-names.push_back("LElbowYaw");
-times[3].arraySetSize(4);
-keys[3].arraySetSize(4);
+	names.push_back("LElbowYaw");
+	times[3].arraySetSize(4);
+	keys[3].arraySetSize(4);
 
-times[3][0] = 0.760000;
-keys[3][0] = -1.63014;
-times[3][1] = 1.12000;
-keys[3][1] = -1.41899;
-times[3][2] = 1.92000;
-keys[3][2] = -1.37451;
-times[3][3] = 2.72000;
-keys[3][3] = -1.18429;
+	times[3][0] = 0.760000;
+	keys[3][0] = -1.63014;
+	times[3][1] = 1.12000;
+	keys[3][1] = -1.41899;
+	times[3][2] = 1.92000;
+	keys[3][2] = -1.37451;
+	times[3][3] = 2.72000;
+	keys[3][3] = -1.18429;
 
-names.push_back("LHand");
-times[4].arraySetSize(4);
-keys[4].arraySetSize(4);
+	names.push_back("LHand");
+	times[4].arraySetSize(4);
+	keys[4].arraySetSize(4);
 
-times[4][0] = 0.560000;
-keys[4][0] = 0.00226893;
-times[4][1] = 0.750492;
-keys[4][1] = 0.954497;
-times[4][2] = 1.92000;
-keys[4][2] = 0.95;
-times[4][3] = 2.72000;
-keys[4][3] = 0.95;
+	times[4][0] = 0.560000;
+	keys[4][0] = 0.00226893;
+	times[4][1] = 0.750492;
+	keys[4][1] = 0.954497;
+	times[4][2] = 1.92000;
+	keys[4][2] = 0.95;
+	times[4][3] = 2.72000;
+	keys[4][3] = 0.95;
 
 // times[4][0] = 0.760000;
 // keys[4][0] = 0.00226893;
@@ -1645,127 +1645,645 @@ keys[4][3] = 0.95;
 // times[4][3] = 2.72000;
 // keys[4][3] = 0.95;
 
-names.push_back("LShoulderPitch");
-times[5].arraySetSize(4);
-keys[5].arraySetSize(4);
+	names.push_back("LShoulderPitch");
+	times[5].arraySetSize(4);
+	keys[5].arraySetSize(4);
 
-times[5][0] = 0.760000;
-keys[5][0] = 0.331613;
-times[5][1] = 1.12000;
-keys[5][1] = -1.18651;
-times[5][2] = 1.92000;
-keys[5][2] = -0.429562;
-times[5][3] = 2.72000;
-keys[5][3] = 1.04921;
+	times[5][0] = 0.760000;
+	keys[5][0] = 0.331613;
+	times[5][1] = 1.12000;
+	keys[5][1] = -1.18651;
+	times[5][2] = 1.92000;
+	keys[5][2] = -0.429562;
+	times[5][3] = 2.72000;
+	keys[5][3] = 1.04921;
 
-names.push_back("LShoulderRoll");
-times[6].arraySetSize(4);
-keys[6].arraySetSize(4);
+	names.push_back("LShoulderRoll");
+	times[6].arraySetSize(4);
+	keys[6].arraySetSize(4);
 
-times[6][0] = 0.760000;
-keys[6][0] = 0.193732;
-times[6][1] = 1.12000;
-keys[6][1] = 0.0137640;
-times[6][2] = 1.92000;
-keys[6][2] = 0.122678;
-times[6][3] = 2.72000;
-keys[6][3] = 0.0858620;
+	times[6][0] = 0.760000;
+	keys[6][0] = 0.193732;
+	times[6][1] = 1.12000;
+	keys[6][1] = 0.0137640;
+	times[6][2] = 1.92000;
+	keys[6][2] = 0.122678;
+	times[6][3] = 2.72000;
+	keys[6][3] = 0.0858620;
 
 
-names.push_back("LWristYaw");
-times[7].arraySetSize(4);
-keys[7].arraySetSize(4);
+	names.push_back("LWristYaw");
+	times[7].arraySetSize(4);
+	keys[7].arraySetSize(4);
 
-times[7][0] = 1.08000;
-keys[7][0] = -1.12748;
-times[7][1] = 1.12000;
-keys[7][1] = -1.13980;
-times[7][2] = 1.92000;
-keys[7][2] = -1.13213;
-times[7][3] = 2.72000;
-keys[7][3] = -1.08765;
+	times[7][0] = 1.08000;
+	keys[7][0] = -1.12748;
+	times[7][1] = 1.12000;
+	keys[7][1] = -1.13980;
+	times[7][2] = 1.92000;
+	keys[7][2] = -1.13213;
+	times[7][3] = 2.72000;
+	keys[7][3] = -1.08765;
 
-names.push_back("RElbowRoll");
-times[8].arraySetSize(4);
-keys[8].arraySetSize(4);
+	names.push_back("RElbowRoll");
+	times[8].arraySetSize(4);
+	keys[8].arraySetSize(4);
 
-times[8][0] = 1.08000;
-keys[8][0] = 1.14441;
-times[8][1] = 1.88000;
-keys[8][1] = 1.13980;
-times[8][2] = 2.68000;
-keys[8][2] = 1.12753;
-times[8][3] = 3.36000;
-keys[8][3] = 0.982620;
+	times[8][0] = 1.08000;
+	keys[8][0] = 1.14441;
+	times[8][1] = 1.88000;
+	keys[8][1] = 1.13980;
+	times[8][2] = 2.68000;
+	keys[8][2] = 1.12753;
+	times[8][3] = 3.36000;
+	keys[8][3] = 0.982620;
 
-names.push_back("RElbowYaw");
-times[9].arraySetSize(4);
-keys[9].arraySetSize(4);
+	names.push_back("RElbowYaw");
+	times[9].arraySetSize(4);
+	keys[9].arraySetSize(4);
 
-times[9][0] = 1.08000;
-keys[9][0] = -0.00617796;
-times[9][1] = 1.88000;
-keys[9][1] = -4.19617e-05;
-times[9][2] = 2.68000;
-keys[9][2] = -0.0199840;
-times[9][3] = 3.36000;
-keys[9][3] = 0.226893;
+	times[9][0] = 1.08000;
+	keys[9][0] = -0.00617796;
+	times[9][1] = 1.88000;
+	keys[9][1] = -4.19617e-05;
+	times[9][2] = 2.68000;
+	keys[9][2] = -0.0199840;
+	times[9][3] = 3.36000;
+	keys[9][3] = 0.226893;
 
-names.push_back("RHand");
-times[10].arraySetSize(4);
-keys[10].arraySetSize(4);
+	names.push_back("RHand");
+	times[10].arraySetSize(4);
+	keys[10].arraySetSize(4);
 
-times[10][0] = 1.08000;
-keys[10][0] = 0.000802851;
-times[10][1] = 1.88000;
-keys[10][1] = 0.000781907;
-times[10][2] = 2.68000;
-keys[10][2] = 0.000781907;
-times[10][3] = 3.36000;
-keys[10][3] = 0.00000;
+	times[10][0] = 1.08000;
+	keys[10][0] = 0.000802851;
+	times[10][1] = 1.88000;
+	keys[10][1] = 0.000781907;
+	times[10][2] = 2.68000;
+	keys[10][2] = 0.000781907;
+	times[10][3] = 3.36000;
+	keys[10][3] = 0.00000;
 
-names.push_back("RShoulderPitch");
-times[11].arraySetSize(3);
-keys[11].arraySetSize(3);
+	names.push_back("RShoulderPitch");
+	times[11].arraySetSize(3);
+	keys[11].arraySetSize(3);
 
-times[11][0] = 1.08000;
-keys[11][0] = 1.17969;
-times[11][1] = 1.88000;
-keys[11][1] = 1.19503;
-times[11][2] = 2.68000;
-keys[11][2] = 1.19810;
+	times[11][0] = 1.08000;
+	keys[11][0] = 1.17969;
+	times[11][1] = 1.88000;
+	keys[11][1] = 1.19503;
+	times[11][2] = 2.68000;
+	keys[11][2] = 1.19810;
 
-names.push_back("RShoulderRoll");
-times[12].arraySetSize(4);
-keys[12].arraySetSize(4);
+	names.push_back("RShoulderRoll");
+	times[12].arraySetSize(4);
+	keys[12].arraySetSize(4);
 
-times[12][0] = 1.08000;
-keys[12][0] = -0.566087;
-times[12][1] = 1.88000;
-keys[12][1] = -0.566087;
-times[12][2] = 2.68000;
-keys[12][2] = -0.570689;
-times[12][3] = 3.36000;
-keys[12][3] = -0.460767;
+	times[12][0] = 1.08000;
+	keys[12][0] = -0.566087;
+	times[12][1] = 1.88000;
+	keys[12][1] = -0.566087;
+	times[12][2] = 2.68000;
+	keys[12][2] = -0.570689;
+	times[12][3] = 3.36000;
+	keys[12][3] = -0.460767;
 
-names.push_back("RWristYaw");
-times[13].arraySetSize(3);
-keys[13].arraySetSize(3);
+	names.push_back("RWristYaw");
+	times[13].arraySetSize(3);
+	keys[13].arraySetSize(3);
 
-times[13][0] = 1.08000;
-keys[13][0] = 0.486237;
-times[13][1] = 1.88000;
-keys[13][1] = 0.510779;
-times[13][2] = 2.68000;
-keys[13][2] = 0.681054;
+	times[13][0] = 1.08000;
+	keys[13][0] = 0.486237;
+	times[13][1] = 1.88000;
+	keys[13][1] = 0.510779;
+	times[13][2] = 2.68000;
+	keys[13][2] = 0.681054;
 
-try
-{
-motion_proxy_ptr->angleInterpolation(names, keys, times, true);
+	try
+	{
+		motion_proxy_ptr->angleInterpolation(names, keys, times, true);
+	}
+	catch(const std::exception&)
+	{
+
+	}
+
 }
-catch(const std::exception&)
-{
 
-}
+
+
+void Entangle(AL::ALMotionProxy* motion_proxy_ptr, bool hand)
+{
+// Choregraphe bezier export in c++.
+// Add #include <alproxies/almotionproxy.h> at the beginning of this file.
+	std::vector<std::string> names;
+	AL::ALValue times, keys;
+	names.reserve(26);
+	times.arraySetSize(26);
+	keys.arraySetSize(26);
+
+	names.push_back("HeadPitch");
+	times[0].arraySetSize(7);
+	keys[0].arraySetSize(7);
+
+	times[0][0] = 0.800000;
+	keys[0][0] = ALVA(0.128814, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][1] = 1.60000;
+	keys[0][1] = ALVA(0.128814, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][2] = 2.40000;
+	keys[0][2] = ALVA(0.128814, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][3] = 3.20000;
+	keys[0][3] = ALVA(0.130348, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][4] = 4.00000;
+	keys[0][4] = ALVA(0.128814, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][5] = 4.80000;
+	keys[0][5] = ALVA(0.130348, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[0][6] = 5.60000;
+	keys[0][6] = ALVA(0.130348, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("HeadYaw");
+	times[1].arraySetSize(7);
+	keys[1].arraySetSize(7);
+
+	times[1][0] = 0.800000;
+	keys[1][0] = ALVA(0.0183661, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][1] = 1.60000;
+	keys[1][1] = ALVA(0.0183661, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][2] = 2.40000;
+	keys[1][2] = ALVA(0.0183661, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][3] = 3.20000;
+	keys[1][3] = ALVA(0.0168321, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][4] = 4.00000;
+	keys[1][4] = ALVA(0.0183661, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][5] = 4.80000;
+	keys[1][5] = ALVA(0.0168321, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[1][6] = 5.60000;
+	keys[1][6] = ALVA(0.0168321, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LAnklePitch");
+	times[2].arraySetSize(7);
+	keys[2].arraySetSize(7);
+
+	times[2][0] = 0.800000;
+	keys[2][0] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][1] = 1.60000;
+	keys[2][1] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][2] = 2.40000;
+	keys[2][2] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][3] = 3.20000;
+	keys[2][3] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][4] = 4.00000;
+	keys[2][4] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][5] = 4.80000;
+	keys[2][5] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[2][6] = 5.60000;
+	keys[2][6] = ALVA(-1.18944, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LAnkleRoll");
+	times[3].arraySetSize(7);
+	keys[3].arraySetSize(7);
+
+	times[3][0] = 0.800000;
+	keys[3][0] = ALVA(0.0782759, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[3][1] = 1.60000;
+	keys[3][1] = ALVA(0.0767419, ALVA(3, -0.266667, 0.000511328), ALVA(3, 0.266667, -0.000511328));
+	times[3][2] = 2.40000;
+	keys[3][2] = ALVA(0.0752079, ALVA(3, -0.266667, 0.00153398), ALVA(3, 0.266667, -0.00153398));
+	times[3][3] = 3.20000;
+	keys[3][3] = ALVA(0.0660040, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[3][4] = 4.00000;
+	keys[3][4] = ALVA(0.0660040, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[3][5] = 4.80000;
+	keys[3][5] = ALVA(0.0767419, ALVA(3, -0.266667, -0.00153399), ALVA(3, 0.266667, 0.00153399));
+	times[3][6] = 5.60000;
+	keys[3][6] = ALVA(0.0782759, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LElbowRoll");
+	times[4].arraySetSize(7);
+	keys[4].arraySetSize(7);
+
+	times[4][0] = 0.800000;
+	keys[4][0] = ALVA(-1.09370, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[4][1] = 1.60000;
+	keys[4][1] = ALVA(-1.19188, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[4][2] = 2.40000;
+	keys[4][2] = ALVA(-1.12745, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[4][3] = 3.20000;
+	keys[4][3] = ALVA(-1.18881, ALVA(3, -0.266667, 0.0562467), ALVA(3, 0.266667, -0.0562467));
+	times[4][4] = 4.00000;
+	keys[4][4] = ALVA(-1.46493, ALVA(3, -0.266667, 0.00306809), ALVA(3, 0.266667, -0.00306809));
+	times[4][5] = 4.80000;
+	keys[4][5] = ALVA(-1.46800, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[4][6] = 5.60000;
+	keys[4][6] = ALVA(-1.43118, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LElbowYaw");
+	times[5].arraySetSize(7);
+	keys[5].arraySetSize(7);
+
+	times[5][0] = 0.800000;
+	keys[5][0] = ALVA(-0.765508, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[5][1] = 1.60000;
+	keys[5][1] = ALVA(-0.966462, ALVA(3, -0.266667, 0.0772114), ALVA(3, 0.266667, -0.0772114));
+	times[5][2] = 2.40000;
+	keys[5][2] = ALVA(-1.22878, ALVA(3, -0.266667, 0.00460194), ALVA(3, 0.266667, -0.00460194));
+	times[5][3] = 3.20000;
+	keys[5][3] = ALVA(-1.23338, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[5][4] = 4.00000;
+	keys[5][4] = ALVA(-1.06004, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[5][5] = 4.80000;
+	keys[5][5] = ALVA(-1.10606, ALVA(3, -0.266667, 0.0107380), ALVA(3, 0.266667, -0.0107380));
+	times[5][6] = 5.60000;
+	keys[5][6] = ALVA(-1.12446, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LHand");
+	times[6].arraySetSize(7);
+	keys[6].arraySetSize(7);
+
+	times[6][0] = 0.800000;
+	keys[6][0] = ALVA(0.00674395, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][1] = 1.60000;
+	keys[6][1] = ALVA(0.00674395, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][2] = 2.40000;
+	keys[6][2] = ALVA(0.00674395, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][3] = 3.20000;
+	keys[6][3] = ALVA(0.00674395, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][4] = 4.00000;
+	keys[6][4] = ALVA(0.00675093, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][5] = 4.80000;
+	keys[6][5] = ALVA(0.00674395, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[6][6] = 5.60000;
+	keys[6][6] = ALVA(0.00675093, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LHipPitch");
+	times[7].arraySetSize(7);
+	keys[7].arraySetSize(7);
+
+	times[7][0] = 0.800000;
+	keys[7][0] = ALVA(-0.740880, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[7][1] = 1.60000;
+	keys[7][1] = ALVA(-0.753152, ALVA(3, -0.266667, 0.0122721), ALVA(3, 0.266667, -0.0122721));
+	times[7][2] = 2.40000;
+	keys[7][2] = ALVA(-0.874338, ALVA(3, -0.266667, 0.0611043), ALVA(3, 0.266667, -0.0611043));
+	times[7][3] = 3.20000;
+	keys[7][3] = ALVA(-1.11978, ALVA(3, -0.266667, 0.0475539), ALVA(3, 0.266667, -0.0475539));
+	times[7][4] = 4.00000;
+	keys[7][4] = ALVA(-1.16733, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[7][5] = 4.80000;
+	keys[7][5] = ALVA(-0.949504, ALVA(3, -0.266667, -0.0613600), ALVA(3, 0.266667, 0.0613600));
+	times[7][6] = 5.60000;
+	keys[7][6] = ALVA(-0.799172, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LHipRoll");
+	times[8].arraySetSize(7);
+	keys[8].arraySetSize(7);
+
+	times[8][0] = 0.800000;
+	keys[8][0] = ALVA(-0.0797260, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[8][1] = 1.60000;
+	keys[8][1] = ALVA(-0.0797260, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[8][2] = 2.40000;
+	keys[8][2] = ALVA(-0.0889301, ALVA(3, -0.266667, 0.00562469), ALVA(3, 0.266667, -0.00562469));
+	times[8][3] = 3.20000;
+	keys[8][3] = ALVA(-0.113474, ALVA(3, -0.266667, 0.00511332), ALVA(3, 0.266667, -0.00511332));
+	times[8][4] = 4.00000;
+	keys[8][4] = ALVA(-0.119610, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[8][5] = 4.80000;
+	keys[8][5] = ALVA(-0.108872, ALVA(3, -0.266667, -0.00511332), ALVA(3, 0.266667, 0.00511332));
+	times[8][6] = 5.60000;
+	keys[8][6] = ALVA(-0.0889301, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LHipYawPitch");
+	times[9].arraySetSize(7);
+	keys[9].arraySetSize(7);
+
+	times[9][0] = 0.800000;
+	keys[9][0] = ALVA(-0.248466, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[9][1] = 1.60000;
+	keys[9][1] = ALVA(-0.250000, ALVA(3, -0.266667, 0.000511327), ALVA(3, 0.266667, -0.000511327));
+	times[9][2] = 2.40000;
+	keys[9][2] = ALVA(-0.251534, ALVA(3, -0.266667, 0.000511330), ALVA(3, 0.266667, -0.000511330));
+	times[9][3] = 3.20000;
+	keys[9][3] = ALVA(-0.253068, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[9][4] = 4.00000;
+	keys[9][4] = ALVA(-0.253068, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[9][5] = 4.80000;
+	keys[9][5] = ALVA(-0.246932, ALVA(3, -0.266667, -0.00613596), ALVA(3, 0.266667, 0.00613596));
+	times[9][6] = 5.60000;
+	keys[9][6] = ALVA(-0.205514, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LKneePitch");
+	times[10].arraySetSize(7);
+	keys[10].arraySetSize(7);
+
+	times[10][0] = 0.800000;
+	keys[10][0] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][1] = 1.60000;
+	keys[10][1] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][2] = 2.40000;
+	keys[10][2] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][3] = 3.20000;
+	keys[10][3] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][4] = 4.00000;
+	keys[10][4] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][5] = 4.80000;
+	keys[10][5] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[10][6] = 5.60000;
+	keys[10][6] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LShoulderPitch");
+	times[11].arraySetSize(7);
+	keys[11].arraySetSize(7);
+
+	times[11][0] = 0.800000;
+	keys[11][0] = ALVA(1.42044, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[11][1] = 1.60000;
+	keys[11][1] = ALVA(1.34834, ALVA(3, -0.266667, 0.0720980), ALVA(3, 0.266667, -0.0720980));
+	times[11][2] = 2.40000;
+	keys[11][2] = ALVA(0.944902, ALVA(3, -0.266667, 0.135759), ALVA(3, 0.266667, -0.135759));
+	times[11][3] = 3.20000;
+	keys[11][3] = ALVA(0.533790, ALVA(3, -0.266667, 0.138827), ALVA(3, 0.266667, -0.138827));
+	times[11][4] = 4.00000;
+	keys[11][4] = ALVA(0.111940, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[11][5] = 4.80000;
+	keys[11][5] = ALVA(0.115008, ALVA(3, -0.266667, -0.00306797), ALVA(3, 0.266667, 0.00306797));
+	times[11][6] = 5.60000;
+	keys[11][6] = ALVA(0.225456, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LShoulderRoll");
+	times[12].arraySetSize(7);
+	keys[12].arraySetSize(7);
+
+	times[12][0] = 0.800000;
+	keys[12][0] = ALVA(0.0597839, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[12][1] = 1.60000;
+	keys[12][1] = ALVA(0.477032, ALVA(3, -0.266667, -0.0866710), ALVA(3, 0.266667, 0.0866710));
+	times[12][2] = 2.40000;
+	keys[12][2] = ALVA(0.579810, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[12][3] = 3.20000;
+	keys[12][3] = ALVA(0.469362, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[12][4] = 4.00000;
+	keys[12][4] = ALVA(0.515382, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[12][5] = 4.80000;
+	keys[12][5] = ALVA(0.450954, ALVA(3, -0.266667, 0.0360490), ALVA(3, 0.266667, -0.0360490));
+	times[12][6] = 5.60000;
+	keys[12][6] = ALVA(0.299088, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("LWristYaw");
+	times[13].arraySetSize(7);
+	keys[13].arraySetSize(7);
+
+	times[13][0] = 0.800000;
+	keys[13][0] = ALVA(0.131882, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[13][1] = 1.60000;
+	keys[13][1] = ALVA(0.124212, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[13][2] = 2.40000;
+	keys[13][2] = ALVA(0.125746, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[13][3] = 3.20000;
+	keys[13][3] = ALVA(-0.0614018, ALVA(3, -0.266667, 0.00460219), ALVA(3, 0.266667, -0.00460219));
+	times[13][4] = 4.00000;
+	keys[13][4] = ALVA(-0.0660040, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[13][5] = 4.80000;
+	keys[13][5] = ALVA(-0.0644701, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[13][6] = 5.60000;
+	keys[13][6] = ALVA(-0.0675380, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RAnklePitch");
+	times[14].arraySetSize(7);
+	keys[14].arraySetSize(7);
+
+	times[14][0] = 0.800000;
+	keys[14][0] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][1] = 1.60000;
+	keys[14][1] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][2] = 2.40000;
+	keys[14][2] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][3] = 3.20000;
+	keys[14][3] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][4] = 4.00000;
+	keys[14][4] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][5] = 4.80000;
+	keys[14][5] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[14][6] = 5.60000;
+	keys[14][6] = ALVA(-1.18630, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RAnkleRoll");
+	times[15].arraySetSize(7);
+	keys[15].arraySetSize(7);
+
+	times[15][0] = 0.800000;
+	keys[15][0] = ALVA(-0.0812600, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[15][1] = 1.60000;
+	keys[15][1] = ALVA(-0.0812600, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[15][2] = 2.40000;
+	keys[15][2] = ALVA(-0.0797260, ALVA(3, -0.266667, -0.00153399), ALVA(3, 0.266667, 0.00153399));
+	times[15][3] = 3.20000;
+	keys[15][3] = ALVA(-0.0705221, ALVA(3, -0.266667, -0.00204531), ALVA(3, 0.266667, 0.00204531));
+	times[15][4] = 4.00000;
+	keys[15][4] = ALVA(-0.0674541, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[15][5] = 4.80000;
+	keys[15][5] = ALVA(-0.0797260, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[15][6] = 5.60000;
+	keys[15][6] = ALVA(-0.0797260, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RElbowRoll");
+	times[16].arraySetSize(7);
+	keys[16].arraySetSize(7);
+
+	times[16][0] = 0.800000;
+	keys[16][0] = ALVA(1.07077, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[16][1] = 1.60000;
+	keys[16][1] = ALVA(1.07231, ALVA(3, -0.266667, -0.00153398), ALVA(3, 0.266667, 0.00153398));
+	times[16][2] = 2.40000;
+	keys[16][2] = ALVA(1.10145, ALVA(3, -0.266667, -0.00460241), ALVA(3, 0.266667, 0.00460241));
+	times[16][3] = 3.20000;
+	keys[16][3] = ALVA(1.10606, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[16][4] = 4.00000;
+	keys[16][4] = ALVA(1.10299, ALVA(3, -0.266667, 0.00306843), ALVA(3, 0.266667, -0.00306843));
+	times[16][5] = 4.80000;
+	keys[16][5] = ALVA(1.06310, ALVA(3, -0.266667, 0.00306796), ALVA(3, 0.266667, -0.00306796));
+	times[16][6] = 5.60000;
+	keys[16][6] = ALVA(1.06004, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RElbowYaw");
+	times[17].arraySetSize(7);
+	keys[17].arraySetSize(7);
+
+	times[17][0] = 0.800000;
+	keys[17][0] = ALVA(0.788434, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[17][1] = 1.60000;
+	keys[17][1] = ALVA(0.789968, ALVA(3, -0.266667, -0.00153398), ALVA(3, 0.266667, 0.00153398));
+	times[17][2] = 2.40000;
+	keys[17][2] = ALVA(0.822182, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[17][3] = 3.20000;
+	keys[17][3] = ALVA(0.822182, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[17][4] = 4.00000;
+	keys[17][4] = ALVA(0.822182, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[17][5] = 4.80000;
+	keys[17][5] = ALVA(0.822182, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[17][6] = 5.60000;
+	keys[17][6] = ALVA(0.822182, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RHand");
+	times[18].arraySetSize(7);
+	keys[18].arraySetSize(7);
+
+	times[18][0] = 0.800000;
+	keys[18][0] = ALVA(0.000502655, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[18][1] = 1.60000;
+	keys[18][1] = ALVA(0.000558504, ALVA(3, -0.266667, -3.72336e-05), ALVA(3, 0.266667, 3.72336e-05));
+	times[18][2] = 2.40000;
+	keys[18][2] = ALVA(0.000726057, ALVA(3, -0.266667, -0.000160571), ALVA(3, 0.266667, 0.000160571));
+	times[18][3] = 3.20000;
+	keys[18][3] = ALVA(0.00152193, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[18][4] = 4.00000;
+	keys[18][4] = ALVA(0.00152193, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[18][5] = 4.80000;
+	keys[18][5] = ALVA(0.00151495, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[18][6] = 5.60000;
+	keys[18][6] = ALVA(0.00152193, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RHipPitch");
+	times[19].arraySetSize(7);
+	keys[19].arraySetSize(7);
+
+	times[19][0] = 0.800000;
+	keys[19][0] = ALVA(-0.742498, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[19][1] = 1.60000;
+	keys[19][1] = ALVA(-0.756304, ALVA(3, -0.266667, 0.0138062), ALVA(3, 0.266667, -0.0138062));
+	times[19][2] = 2.40000;
+	keys[19][2] = ALVA(-0.882092, ALVA(3, -0.266667, 0.0634053), ALVA(3, 0.266667, -0.0634053));
+	times[19][3] = 3.20000;
+	keys[19][3] = ALVA(-1.13674, ALVA(3, -0.266667, 0.0460200), ALVA(3, 0.266667, -0.0460200));
+	times[19][4] = 4.00000;
+	keys[19][4] = ALVA(-1.18276, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[19][5] = 4.80000;
+	keys[19][5] = ALVA(-0.949588, ALVA(3, -0.266667, -0.0634053), ALVA(3, 0.266667, 0.0634053));
+	times[19][6] = 5.60000;
+	keys[19][6] = ALVA(-0.802324, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RHipRoll");
+	times[20].arraySetSize(7);
+	keys[20].arraySetSize(7);
+
+	times[20][0] = 0.800000;
+	keys[20][0] = ALVA(0.0798099, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[20][1] = 1.60000;
+	keys[20][1] = ALVA(0.0782759, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[20][2] = 2.40000;
+	keys[20][2] = ALVA(0.0859461, ALVA(3, -0.266667, -0.00536899), ALVA(3, 0.266667, 0.00536899));
+	times[20][3] = 3.20000;
+	keys[20][3] = ALVA(0.110490, ALVA(3, -0.266667, -0.00153422), ALVA(3, 0.266667, 0.00153422));
+	times[20][4] = 4.00000;
+	keys[20][4] = ALVA(0.112024, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[20][5] = 4.80000;
+	keys[20][5] = ALVA(0.101286, ALVA(3, -0.266667, 0.00511336), ALVA(3, 0.266667, -0.00511336));
+	times[20][6] = 5.60000;
+	keys[20][6] = ALVA(0.0813439, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RHipYawPitch");
+	times[21].arraySetSize(7);
+	keys[21].arraySetSize(7);
+
+	times[21][0] = 0.800000;
+	keys[21][0] = ALVA(-0.248466, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[21][1] = 1.60000;
+	keys[21][1] = ALVA(-0.250000, ALVA(3, -0.266667, 0.000511327), ALVA(3, 0.266667, -0.000511327));
+	times[21][2] = 2.40000;
+	keys[21][2] = ALVA(-0.251534, ALVA(3, -0.266667, 0.000511330), ALVA(3, 0.266667, -0.000511330));
+	times[21][3] = 3.20000;
+	keys[21][3] = ALVA(-0.253068, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[21][4] = 4.00000;
+	keys[21][4] = ALVA(-0.253068, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[21][5] = 4.80000;
+	keys[21][5] = ALVA(-0.246932, ALVA(3, -0.266667, -0.00613596), ALVA(3, 0.266667, 0.00613596));
+	times[21][6] = 5.60000;
+	keys[21][6] = ALVA(-0.205514, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RKneePitch");
+	times[22].arraySetSize(7);
+	keys[22].arraySetSize(7);
+
+	times[22][0] = 0.800000;
+	keys[22][0] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][1] = 1.60000;
+	keys[22][1] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][2] = 2.40000;
+	keys[22][2] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][3] = 3.20000;
+	keys[22][3] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][4] = 4.00000;
+	keys[22][4] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][5] = 4.80000;
+	keys[22][5] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[22][6] = 5.60000;
+	keys[22][6] = ALVA(2.11255, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RShoulderPitch");
+	times[23].arraySetSize(7);
+	keys[23].arraySetSize(7);
+
+	times[23][0] = 0.800000;
+	keys[23][0] = ALVA(1.44047, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[23][1] = 1.60000;
+	keys[23][1] = ALVA(1.44047, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[23][2] = 2.40000;
+	keys[23][2] = ALVA(1.42820, ALVA(3, -0.266667, 0.0122718), ALVA(3, 0.266667, -0.0122718));
+	times[23][3] = 3.20000;
+	keys[23][3] = ALVA(1.25179, ALVA(3, -0.266667, 0.0337481), ALVA(3, 0.266667, -0.0337481));
+	times[23][4] = 4.00000;
+	keys[23][4] = ALVA(1.21804, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[23][5] = 4.80000;
+	keys[23][5] = ALVA(1.22724, ALVA(3, -0.266667, -0.00920388), ALVA(3, 0.266667, 0.00920388));
+	times[23][6] = 5.60000;
+	keys[23][6] = ALVA(1.39138, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RShoulderRoll");
+	times[24].arraySetSize(7);
+	keys[24].arraySetSize(7);
+
+	times[24][0] = 0.800000;
+	keys[24][0] = ALVA(-0.0690720, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[24][1] = 1.60000;
+	keys[24][1] = ALVA(-0.0690720, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[24][2] = 2.40000;
+	keys[24][2] = ALVA(-0.0675380, ALVA(3, -0.266667, -0.000766992), ALVA(3, 0.266667, 0.000766992));
+	times[24][3] = 3.20000;
+	keys[24][3] = ALVA(-0.0644701, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[24][4] = 4.00000;
+	keys[24][4] = ALVA(-0.0675380, ALVA(3, -0.266667, 0.000766992), ALVA(3, 0.266667, -0.000766992));
+	times[24][5] = 4.80000;
+	keys[24][5] = ALVA(-0.0690720, ALVA(3, -0.266667, 0.000511328), ALVA(3, 0.266667, -0.000511328));
+	times[24][6] = 5.60000;
+	keys[24][6] = ALVA(-0.0706060, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	names.push_back("RWristYaw");
+	times[25].arraySetSize(7);
+	keys[25].arraySetSize(7);
+
+	times[25][0] = 0.800000;
+	keys[25][0] = ALVA(-0.0920820, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[25][1] = 1.60000;
+	keys[25][1] = ALVA(-0.0920820, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[25][2] = 2.40000;
+	keys[25][2] = ALVA(-0.0905480, ALVA(3, -0.266667, -0.00102266), ALVA(3, 0.266667, 0.00102266));
+	times[25][3] = 3.20000;
+	keys[25][3] = ALVA(-0.0859461, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[25][4] = 4.00000;
+	keys[25][4] = ALVA(-0.0859461, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[25][5] = 4.80000;
+	keys[25][5] = ALVA(-0.0874801, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.266667, 0.00000));
+	times[25][6] = 5.60000;
+	keys[25][6] = ALVA(-0.0874801, ALVA(3, -0.266667, -0.00000), ALVA(3, 0.00000, 0.00000));
+
+	try
+	{
+	motion_proxy_ptr->angleInterpolationBezier(names, times, keys);
+		// motion_proxy_ptr->angleInterpolation(names, keys, times, true);
+	}
+	catch(const std::exception&)
+	{
+
+	}
 
 }

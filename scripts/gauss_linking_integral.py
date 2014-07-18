@@ -89,7 +89,7 @@ while pose == None:
 points[0,:,:] = scale * np.array(pose)
 
 # s1
-zdist = 3
+zdist = 2.5
 ydist = 2
 points[1,0,:] = [ zdist, 4+ydist, 4]
 points[1,1,:] = [ zdist, 0+ydist, 4]
@@ -415,6 +415,23 @@ def draw_robot():
     pose = get_nao_pose()
     points[0,:,:] = scale * np.array(pose)
 
+def draw_floor():
+    glEnable(GL_TEXTURE_2D)
+    glPushMatrix();
+    # glTranslatef(0.0,-2.0,0.0)
+    # glRotatef(30.0,0.0,1.0,0.0)
+    for numy in range(-10,10):
+        for num in range(-10,10):
+            glBindTexture(GL_TEXTURE_2D, texture)   # 2d texture (x and y size)
+            glBegin(GL_QUADS);                      # floor
+            glTexCoord2f(1.0, 1.0); glVertex3f(-1.0 + num*2, -1.0 - numy*2, -5.0);
+            glTexCoord2f(0.0, 1.0); glVertex3f( 1.0 + num*2, -1.0 - numy*2, -5.0);
+            glTexCoord2f(0.0, 0.0); glVertex3f( 1.0 + num*2,  1.0 - numy*2, -5.0);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-1.0 + num*2,  1.0 - numy*2, -5.0);
+            glEnd();
+    glPopMatrix()
+    glDisable(GL_TEXTURE_2D)
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -430,26 +447,11 @@ def display():
     draw_strands(0, (1.0, 1.0, 1.0))
     draw_strands(1, (1.0, 1.0, 0.0))
     # draw_strands(2, (0.0, 1.0, 1.0))
-    # draw_robot()
-
+    draw_robot()
+    # draw_floor()
     glBindTexture(GL_TEXTURE_2D, texture)
 
 
-    glEnable(GL_TEXTURE_2D)
-    glPushMatrix();
-    # glTranslatef(0.0,-2.0,0.0)
-    # glRotatef(30.0,0.0,1.0,0.0)
-    for numz in range(0,10):
-        for num in range(0,10):
-            glBindTexture(GL_TEXTURE_2D, texture)   # 2d texture (x and y size)
-            glBegin(GL_QUADS);                      # floor
-            glTexCoord2f(1.0, 1.0); glVertex3f(-1.0 + num*2, -5.0, -1.0 - numz*2);
-            glTexCoord2f(0.0, 1.0); glVertex3f( 1.0 + num*2, -5.0, -1.0 - numz*2);
-            glTexCoord2f(0.0, 0.0); glVertex3f( 1.0 + num*2, -5.0,  1.0 - numz*2);
-            glTexCoord2f(1.0, 0.0); glVertex3f(-1.0 + num*2, -5.0,  1.0 - numz*2);
-            glEnd();
-    glPopMatrix()
-    glDisable(GL_TEXTURE_2D)
 
     # glPushMatrix();
     # glTranslatef(0.0,3.0,-20.0)
