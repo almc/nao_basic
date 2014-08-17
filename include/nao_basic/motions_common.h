@@ -17,6 +17,7 @@ void MoveHand2(AL::ALMotionProxy* motion_proxy_ptr);
 void TrackBallWithHead(AL::ALMotionProxy* motion_proxy_ptr,
 						int u_img, int v_img,
 						int img_width, int img_height);
+
 void CheckHand(AL::ALMotionProxy* motion_proxy_ptr);
 
 void Bend(AL::ALMotionProxy* motion_proxy_ptr);
@@ -27,8 +28,9 @@ void UnBend2(AL::ALMotionProxy* motion_proxy_ptr);
 
 void Throw(AL::ALMotionProxy* motion_proxy_ptr);
 
-bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr);
+void Entangle(AL::ALMotionProxy* motion_proxy_ptr, bool hand);
 
+bool CheckLHand(AL::ALMotionProxy* motion_proxy_ptr);
 
 void MoveBack(AL::ALMotionProxy* motion_proxy_ptr);
 

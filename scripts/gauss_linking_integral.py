@@ -1,3 +1,9 @@
+# ~/naoqi/naoqi-sdk-1.14.5-linux64/naoqi --verbose --broker-ip 127.0.0.1
+# roslaunch nao_driver nao_driver_sim.launch
+# roslaunch nao_description nao_state_publisher.launch
+# NAO_IP=192.168.0.195 roslaunch nao_driver nao_driver_sim.launch
+# NAO_IP=192.168.0.195 roslaunch nao_description nao_state_publisher.launch
+# ./ShortLoop /tmp/cluster_0.off
 # import pdb; pdb.set_trace()
 import sys, itertools, Image
 import numpy as np
@@ -48,7 +54,7 @@ def get_nao_pose():
                 list(trans_Lhip), list(trans_Rhip), list(trans_Lknee), list(trans_Rknee), list(trans_Lankle), list(trans_Rankle),
                 list(trans_Lsole), list(trans_Rsole)]
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        print "exception"
+        print "waiting for NAO connection"
         return None
 
 ################################################################################
@@ -76,16 +82,19 @@ scale         = 25
 # points[0,0,:] = [-2, 1, 0]
 # points[0,1,:] = [ 2, 1, 0]
 
+# snao
 pose = get_nao_pose()
 while pose == None:
     pose = get_nao_pose()
 points[0,:,:] = scale * np.array(pose)
 
 # s1
-points[1,0,:] = [ 0, 2, 2]
-points[1,1,:] = [ 0, 0, 2]
-points[1,2,:] = [ 0, 0,-2]
-points[1,3,:] = [ 0, 2,-2]
+zdist = 2.5
+ydist = 2
+points[1,0,:] = [ zdist, 4+ydist, 4]
+points[1,1,:] = [ zdist, 0+ydist, 4]
+points[1,2,:] = [ zdist, 0+ydist,-4]
+points[1,3,:] = [ zdist, 4+ydist,-4]
 ## connectivity
 # s0
 connect[0,0,1]   = connect[0,1,0]   = 1
@@ -106,13 +115,13 @@ connect[0,15,17] = connect[0,17,15] = 1
 connect[0,12,14] = connect[0,14,12] = 1
 connect[0,14,16] = connect[0,16,14] = 1
 connect[0,16,18] = connect[0,18,16] = 1
-
-
 # connect[0,:,:] = connect[0,:,:] = 1
+
 # s1
 connect[1,0,1] = connect[1,1,0] = 1
 connect[1,1,2] = connect[1,2,1] = 1
 connect[1,2,3] = connect[1,3,2] = 1
+connect[1,3,0] = connect[1,0,3] = 1
 print "--> points\n", points
 print "--> connect\n", connect
 ################################################################################
@@ -150,7 +159,7 @@ print "--> connect\n", connect
 # ################################################################################
 # #                                 3D data                                      #
 # ################################################################################
-# n_points      = [2, 4, 3]                     # number of points for each strand
+# n_points      = [4, 4]                     # number of points for each strand
 # n_max_points  = np.max(n_points)               # maximum number of points fall s
 # n_strands     = np.size(n_points)                            # number of strands
 # strands       = range(n_strands)                        # enumeration of strands
@@ -159,27 +168,38 @@ print "--> connect\n", connect
 # ################################################################################
 # ## points
 # # s0
-# points[0,0,:] = [-2, 1, 0]
-# points[0,1,:] = [ 2, 1, 0]
+# distance = 1.5
+# points[0,0,:] = [ 2, 0, 3+distance]
+# points[0,1,:] = [ 2, 0, 0+distance]
+# points[0,2,:] = [-2, 0, 0+distance]
+# points[0,3,:] = [-2, 0, 3+distance]
 # # s1
 # points[1,0,:] = [ 0, 2, 2]
-# points[1,1,:] = [ 0, 0, 2]
-# points[1,2,:] = [ 0, 0,-2]
-# points[1,3,:] = [ 0, 2,-2]
+# points[1,1,:] = [ 0,-2, 2]
+# points[1,2,:] = [ 0,-2,-1]
+# points[1,3,:] = [ 0, 2,-1]
 # # s3
-# points[2,0,:] = [-2, 1,-1]
-# points[2,1,:] = [ 2, 1,-1]
-# points[2,2,:] = [ 2, 1, 1]
+# # points[2,0,:] = [ 0, 2,-2]
+# # points[2,1,:] = [ 0,-2,-2]
+# # points[2,2,:] = [ 0,-2, 1]
+# # points[2,3,:] = [ 0, 2, 1]
 # ## connectivity
 # # s0
 # connect[0,0,1] = connect[0,1,0] = 1
-# # s1
+# connect[0,1,2] = connect[0,2,1] = 1
+# connect[0,2,3] = connect[0,3,2] = 1
+# connect[0,3,0] = connect[0,0,3] = 1
+# # # s1
 # connect[1,0,1] = connect[1,1,0] = 1
 # connect[1,1,2] = connect[1,2,1] = 1
 # connect[1,2,3] = connect[1,3,2] = 1
+# connect[1,3,0] = connect[1,0,3] = 1
 # # s3
-# connect[2,0,1] = connect[2,1,0] = 1
-# connect[2,1,2] = connect[2,2,1] = 1
+# # connect[2,0,1] = connect[2,1,0] = 1
+# # connect[2,1,2] = connect[2,2,1] = 1
+# # connect[2,2,3] = connect[2,3,2] = 1
+# # connect[2,3,0] = connect[2,0,3] = 1
+
 # print "--> points\n", points
 # print "--> connect\n", connect
 # ################################################################################
@@ -253,15 +273,75 @@ def writhe_2(s0, s1):
             if n_cn != 0: n_c = n_c / n_cn
             n_d  = np.cross(r_bc, r_ac); n_dn = np.linalg.norm(n_d)
             if n_dn != 0: n_d = n_d / n_dn
-            writhe_matrix.item(idx_sc)[l0,l1] = np.arcsin(np.dot(n_a,n_b)) + \
-                                                np.arcsin(np.dot(n_b,n_c)) + \
-                                                np.arcsin(np.dot(n_c,n_d)) + \
-                                                np.arcsin(np.dot(n_d,n_a))
 
+            number_ab = np.dot(n_a,n_b)
+            number_bc = np.dot(n_b,n_c)
+            number_cd = np.dot(n_c,n_d)
+            number_da = np.dot(n_d,n_a)
+
+            if number_ab >= 1.0:
+                number_ab = 1.0
+            if number_bc >= 1.0:
+                number_bc = 1.0
+            if number_cd >= 1.0:
+                number_cd = 1.0
+            if number_da >= 1.0:
+                number_da = 1.0
+
+            if number_ab <= -1.0:
+                number_ab = -1.0
+            if number_bc <= -1.0:
+                number_bc = -1.0
+            if number_cd <= -1.0:
+                number_cd = -1.0
+            if number_da <= -1.0:
+                number_da = -1.0
+
+            # print type(writhe_matrix)
+            # print writhe_matrix.shape
+            # print "*+********************",writhe_matrix.item(idx_sc)[l0,l1]
+            writhe_matrix.item(idx_sc)[l0,l1] = np.arcsin(number_ab) + \
+                                                np.arcsin(number_bc) + \
+                                                np.arcsin(number_cd) + \
+                                                np.arcsin(number_da)
+
+            # writhe_matrix[idx_sc,l0,l1] = writhe_matrix[idx_sc,l0,l1] % (4 * np.pi)
+            # writhe_matrix[idx_sc,l0,l1] = (writhe_matrix[idx_sc,l0,l1] + np.pi) % (2 * np.pi) - np.pi
+            # writhe_matrix[idx_sc,l0,l1] = np.arcsin(np.dot(n_a,n_b)) + \
+            #                               np.arcsin(np.dot(n_b,n_c)) + \
+            #                               np.arcsin(np.dot(n_c,n_d)) + \
+            #                               np.arcsin(np.dot(n_d,n_a))
+            # writhe_matrix[idx_sc,l0,l1] = writhe_matrix[idx_sc,l0,l1] * np.sign(np.dot(np.cross(r_cd,r_ab), r_ac)) / (4*np.pi)
+            writhe_matrix.item(idx_sc)[l0,l1] = writhe_matrix.item(idx_sc)[l0,l1] * \
+                                                np.sign(np.dot(np.cross(r_cd,r_ab), r_ac)) / (4*np.pi)
+    print "--->>>GLI at", idx_sc, "between", s0, s1, "is\n", sum(sum(writhe_matrix[idx_sc].sum()))
+    # print "--->>>GLI at", idx_sc, "between", s0, s1, "is\n", writhe_matrix[idx_sc].sum()
+    # print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
+
+# def writhe_2(s0, s1):
+#     assert(s0 <= s1)
+#     # s0 = 1; s1 = 0
+#     # idx_sc = np.argwhere(np.all((strand_combos-np.array([s0,s1]))==0,axis=-1))
+#     idx_sc = np.argwhere((strand_combos == np.array([s0,s1])).all(-1))
+#     print "index_strand_combo", idx_sc
+#     for l0 in range(n_lines[s0]):
+#         for l1 in range(n_lines[s1]):
+#             idx_l0 = i_lines[s0,l0,:]; idx_l1 = i_lines[s1,l1,:]
+#             a = points[s0,idx_l0[0],:]; b = points[s0,idx_l0[1],:]
+#             c = points[s1,idx_l1[0],:]; d = points[s1,idx_l1[1],:]
+#             r_ab = b - a; r_ac = c - a; r_ad = d - a;
+#             r_bc = c - b; r_bd = d - b; r_cd = d - c;
+#             s1  = r_ab;
+#             s2  = r_cd;
+#             s1n = np.linalg.norm(s1)
+#             s2n = np.linalg.norm(s2)
+#             e1  = s1 / s1n
+#             e2  = s2 / s2n
 
 
 writhe_n()
-print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
+# print "--> writhe_matrix\n", '\n'.join(map(str, writhe_matrix))
+# print "--> GLI =", sum(sum(writhe_matrix))
 
 def initGL(width, height):
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -335,6 +415,23 @@ def draw_robot():
     pose = get_nao_pose()
     points[0,:,:] = scale * np.array(pose)
 
+def draw_floor():
+    glEnable(GL_TEXTURE_2D)
+    glPushMatrix();
+    # glTranslatef(0.0,-2.0,0.0)
+    # glRotatef(30.0,0.0,1.0,0.0)
+    for numy in range(-10,10):
+        for num in range(-10,10):
+            glBindTexture(GL_TEXTURE_2D, texture)   # 2d texture (x and y size)
+            glBegin(GL_QUADS);                      # floor
+            glTexCoord2f(1.0, 1.0); glVertex3f(-1.0 + num*2, -1.0 - numy*2, -5.0);
+            glTexCoord2f(0.0, 1.0); glVertex3f( 1.0 + num*2, -1.0 - numy*2, -5.0);
+            glTexCoord2f(0.0, 0.0); glVertex3f( 1.0 + num*2,  1.0 - numy*2, -5.0);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-1.0 + num*2,  1.0 - numy*2, -5.0);
+            glEnd();
+    glPopMatrix()
+    glDisable(GL_TEXTURE_2D)
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -351,31 +448,16 @@ def display():
     draw_strands(1, (1.0, 1.0, 0.0))
     # draw_strands(2, (0.0, 1.0, 1.0))
     draw_robot()
-
+    # draw_floor()
     glBindTexture(GL_TEXTURE_2D, texture)
 
 
-    glEnable(GL_TEXTURE_2D)
-    glPushMatrix();
-    # glTranslatef(0.0,-2.0,0.0)
-    # glRotatef(30.0,0.0,1.0,0.0)
-    for numz in range(0,10):
-        for num in range(0,10):
-            glBindTexture(GL_TEXTURE_2D, texture)   # 2d texture (x and y size)
-            glBegin(GL_QUADS);                      # floor
-            glTexCoord2f(1.0, 1.0); glVertex3f(-1.0 + num*2, -1.0, -1.0 - numz*2);
-            glTexCoord2f(0.0, 1.0); glVertex3f( 1.0 + num*2, -1.0, -1.0 - numz*2);
-            glTexCoord2f(0.0, 0.0); glVertex3f( 1.0 + num*2, -1.0,  1.0 - numz*2);
-            glTexCoord2f(1.0, 0.0); glVertex3f(-1.0 + num*2, -1.0,  1.0 - numz*2);
-            glEnd();
-    glPopMatrix()
-    glDisable(GL_TEXTURE_2D)
 
-    glPushMatrix();
-    glTranslatef(0.0,3.0,-20.0)
-    glRotatef(30.0,0.0,1.0,0.0)
-    glutSolidCube(2)
-    glPopMatrix()
+    # glPushMatrix();
+    # glTranslatef(0.0,3.0,-20.0)
+    # glRotatef(30.0,0.0,1.0,0.0)
+    # glutSolidCube(2)
+    # glPopMatrix()
 
     glutSwapBuffers()
     glutPostRedisplay()
@@ -409,6 +491,7 @@ def keyboard(key, x, y):
     # global eye
     # diff = center - eye
     navigation_speed = 0.1
+    global distance
 
     if key == chr(27):
         sys.exit(0)
@@ -437,12 +520,26 @@ def keyboard(key, x, y):
         xpos += move_speed * float(np.sin(yrotrad)) * -1.0 * pitchFactor
         ypos += move_speed * float(np.sin(xrotrad)) *  1.0
         zpos += move_speed * float(np.cos(yrotrad)) *  1.0 * yawFactor;
+    elif key == 'c':
+        writhe_2(0, 1)
 
-def loadTexture ( fileName, texture ):
+    # elif key == 'm':
+    #     distance += 0.05
+    #     writhe_n()
+    # elif key == 'n':
+    #     distance -= 0.05
+    #     writhe_n()
+    # points[0,0,:] = [ 2, 0, 3+distance]
+    # points[0,1,:] = [ 2, 0, 0+distance]
+    # points[0,2,:] = [-2, 0, 0+distance]
+    # points[0,3,:] = [-2, 0, 3+distance]
+
+
+def loadTexture(fileName, texture):
     image  = Image.open(fileName)
     width  = image.size[0]
     height = image.size[1]
-    image  = image.tostring ( "raw", "RGBX", 0, -1 )
+    image  = image.tostring("raw", "RGBX", 0, -1)
 
     #    texture = glGenTextures ( 1 )
     glBindTexture     ( GL_TEXTURE_2D, texture )
@@ -459,7 +556,7 @@ def main():
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
     glutInitWindowSize(window_width, window_height);
-    glutInitWindowPosition(200,200)
+    glutInitWindowPosition(0,0)
     glutCreateWindow("Gauss Linking Integral")
     loadTexture("tex.jpg", texture)
     loadTexture("wall.jpg", textureWall)

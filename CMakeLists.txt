@@ -135,6 +135,9 @@ target_link_libraries(BallGrasperBT ${COMMON_LIB})
 add_executable(BallThrowerBT src/bt/ball_thrower_bt.cpp ${COMMON_SRC})
 target_link_libraries(BallThrowerBT ${COMMON_LIB})
 
+add_executable(EntanglerBT src/bt/entangler_bt.cpp ${COMMON_SRC})
+target_link_libraries(EntanglerBT ${COMMON_LIB})
+
 add_executable(WalkerBT src/bt/walker_bt.cpp ${COMMON_SRC})
 target_link_libraries(WalkerBT ${COMMON_LIB})
 
