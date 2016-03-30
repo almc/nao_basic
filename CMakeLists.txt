@@ -147,6 +147,9 @@ target_link_libraries(HandMoverBT ${COMMON_LIB})
 add_executable(GoToWaypointBT src/bt/goto_waypoint_bt.cpp ${COMMON_SRC})
 target_link_libraries(GoToWaypointBT ${COMMON_LIB})
 
+add_executable(GoToWaypointStandalone src/bt/goto_waypoint_standalone.cpp ${COMMON_SRC})
+target_link_libraries(GoToWaypointStandalone ${COMMON_LIB})
+
 add_executable(MoveUpBT src/bt/move_up_bt.cpp ${COMMON_SRC})
 target_link_libraries(MoveUpBT ${COMMON_LIB})
 
