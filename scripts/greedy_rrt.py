@@ -174,8 +174,13 @@ def main():
     # obsta = [pygame.Rect(x, y, 380, 100), pygame.Rect(x, y, 100, 250)]
     # obsta = [pygame.Rect(x, y, 380, 100), pygame.Rect(x, y, 100, 250),
     #          pygame.Rect(x+400, y, 100, 250)]
-    obsta = [pygame.Rect(x, y, 390, 100), pygame.Rect(x, y, 100, 250),
-             pygame.Rect(x+400, y, 100, 250)]
+    # obsta = [pygame.Rect(x, y, 390, 100), pygame.Rect(x, y, 100, 250),
+    #          pygame.Rect(x+400, y, 100, 250)]
+
+    obsta = [pygame.Rect(100, 100, 200, 40),
+             pygame.Rect(310, 100, 200, 40),
+             pygame.Rect(200, 200, 300, 40),
+             pygame.Rect(100, 300, 300, 40)]
 
     invalid = check_collision(nodes[0], obsta)
     assert invalid == False, "The initial pose is in a collision state"
@@ -184,7 +189,7 @@ def main():
     draw_nodes(screen, nodes, white, node_radius)
     draw_goals(screen, goals, green, node_radius)
     pygame.display.update()
-    # a=raw_input()
+    a=raw_input()
 
     for i in range(NUMNODES):   # assumes that node[0] has the highest score
         # print ">>>>>>>>>>expansion number:", i, "node:", nodes[0]
